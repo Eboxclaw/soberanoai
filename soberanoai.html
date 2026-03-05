@@ -1205,7 +1205,7 @@ async function handleWL(event){
     }
 
     wlForm.innerHTML = '<div style="padding:20px;text-align:center;font-size:11px;color:var(--purple);width:100%;letter-spacing:.15em;">✓ &nbsp;Sovereignty incoming. You\'re on the list.</div>';
-    wlNote.textContent = result.alreadyJoined ? 'Already on the waitlist — we'll be in touch.' : 'Confirmed via Cloudflare edge.';
+    wlNote.textContent = result.alreadyJoined ? "Already on the waitlist — we'll be in touch." : 'Confirmed via Cloudflare edge.';
   } catch (error) {
     wlSubmit.disabled = false;
     wlSubmit.textContent = 'Secure my spot';
