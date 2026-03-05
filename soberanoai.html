@@ -889,11 +889,11 @@ footer{padding:36px 36px;border-top:1px solid rgba(107,92,231,.07);display:flex;
     <div class="stag rv" style="justify-content:center;"><div class="stag-l"></div><span class="stag-t">07 / Early Access</span></div>
     <h2 class="sh rv" style="text-align:center;">BE FIRST TO<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:var(--purple);text-transform:none;">reclaim yours.</em></h2>
     <p class="rv" style="font-size:11px;color:var(--mid);margin-top:12px;line-height:1.9;text-align:center;">Private beta launching soon. Join to get early access, shape the product, and be notified at launch.</p>
-    <div class="wl-form rv" id="wlForm">
-      <input type="email" class="wl-input" placeholder="your@email.com" id="wlEmail">
-      <button class="wl-submit" onclick="handleWL()">Secure my spot</button>
-    </div>
-    <span class="wl-note rv">No cloud. No tracking. Not even from us.</span>
+    <form class="wl-form rv" id="wlForm">
+      <input type="email" class="wl-input" placeholder="your@email.com" id="wlEmail" required>
+      <button class="wl-submit" id="wlSubmit" type="submit">Secure my spot</button>
+    </form>
+    <span class="wl-note rv" id="wlNote">No cloud. No tracking. Not even from us.</span>
     <div class="wl-badges rv">
       <span class="wl-badge"><span class="wl-dot"></span>Local encrypted</span>
       <span class="wl-badge"><span class="wl-dot"></span>AES-256 vault</span>
@@ -1147,11 +1147,51 @@ document.addEventListener('mousemove',e=>{
   document.querySelector('.b3').style.transform=`translate(${x*20}px,${-y*24}px)`;
 });
 
-// ── WAITLIST ──
-function handleWL(){
-  const e=document.getElementById('wlEmail')?.value;
-  if(!e||!e.includes('@')){ document.getElementById('wlEmail').style.outline='2px solid var(--purple)'; return; }
-  document.getElementById('wlForm').innerHTML='<div style="padding:20px;text-align:center;font-size:11px;color:var(--purple);width:100%;letter-spacing:.15em;">✓ &nbsp;Sovereignty incoming. You\'re on the list.</div>';
+// ── WAITLIST (Cloudflare Worker) ──
+const WAITLIST_ENDPOINT = window.WAITLIST_ENDPOINT || 'https://replace-with-your-worker-domain.workers.dev/api/waitlist';
+const wlForm = document.getElementById('wlForm');
+const wlEmail = document.getElementById('wlEmail');
+const wlSubmit = document.getElementById('wlSubmit');
+const wlNote = document.getElementById('wlNote');
+
+async function handleWL(event){
+  event?.preventDefault();
+
+  const email = wlEmail?.value?.trim()?.toLowerCase();
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    wlEmail.style.outline='2px solid var(--purple)';
+    wlNote.textContent = 'Please enter a valid email address.';
+    return;
+  }
+
+  wlEmail.style.outline='none';
+  wlSubmit.disabled = true;
+  wlSubmit.textContent = 'Securing...';
+  wlNote.textContent = 'Encrypting request and contacting enclave edge...';
+
+  try {
+    const response = await fetch(WAITLIST_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, source: 'soberanoai-landing' })
+    });
+
+    const result = await response.json().catch(() => ({}));
+    if(!response.ok){
+      throw new Error(result.error || 'Unable to join waitlist right now.');
+    }
+
+    wlForm.innerHTML = '<div style="padding:20px;text-align:center;font-size:11px;color:var(--purple);width:100%;letter-spacing:.15em;">✓ &nbsp;Sovereignty incoming. You\'re on the list.</div>';
+    wlNote.textContent = 'Confirmed via Cloudflare edge.';
+  } catch (error) {
+    wlSubmit.disabled = false;
+    wlSubmit.textContent = 'Secure my spot';
+    wlNote.textContent = error.message || 'Network issue. Please try again in a moment.';
+  }
+}
+
+if (wlForm) {
+  wlForm.addEventListener('submit', handleWL);
 }
 
 // ── NAV ACTIVE ──
