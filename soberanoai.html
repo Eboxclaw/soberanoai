@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoberanoAI — Your intelligence, entirely yours.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@300;400;500&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f4f2fb; --bg2:#edeaf8; --bg3:#e8e4f4; --white:#ffffff;
+  --ink:#0c0b18; --ink2:#1e1c38;
+  --mid:#7a7890; --light:#b0aec8; --faint:#d8d6ec;
+  --purple:#6b5ce7; --pl:#9b8ff5; --pd:#4a3db5;
+  --green:#22c55e; --amber:#f59e0b; --blue:#60a5fa;
+  --pa: rgba(107,92,231,0.10);
+  --pb: rgba(100,200,255,0.10);
+  --pc: rgba(255,180,100,0.08);
+  --pd2: rgba(100,255,200,0.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+::selection{background:var(--purple);color:white;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;overflow-x:hidden;cursor:none;}
+
+/* ── SCROLL PROGRESS ── */
+#progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--pl),var(--blue));z-index:9999;width:0%;transition:width .1s linear;box-shadow:0 0 8px var(--purple);}
+
+/* ── NOISE ── */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.022'/%3E%3C/svg%3E");pointer-events:none;z-index:8000;}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:8px;height:8px;background:var(--ink);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);mix-blend-mode:multiply;transition:transform .1s,background .2s;}
+#cur-r{position:fixed;width:30px;height:30px;border:1px solid var(--purple);border-radius:50%;pointer-events:none;z-index:9997;transform:translate(-50%,-50%);opacity:.3;transition:transform .25s,opacity .25s;}
+#cur-trail{position:fixed;pointer-events:none;z-index:9996;font-size:8px;font-family:'DM Mono',monospace;color:var(--purple);opacity:0;transition:opacity .3s;}
+.cx #cur{transform:translate(-50%,-50%) scale(2);background:var(--purple);}
+.cx #cur-r{transform:translate(-50%,-50%) scale(1.8);opacity:.1;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 36px;height:58px;background:rgba(244,242,251,0.9);backdrop-filter:blur(28px);border-bottom:1px solid rgba(107,92,231,0.07);}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:21px;letter-spacing:.06em;text-decoration:none;color:var(--ink);}
+.logo span{color:var(--light);}
+.nav-mid{display:flex;gap:28px;list-style:none;}
+.nav-mid a{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .2s;position:relative;}
+.nav-mid a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--purple);}
+.nav-mid a:hover{color:var(--ink);}
+.nav-right{display:flex;align-items:center;gap:20px;}
+#liveclock{font-size:9px;letter-spacing:.18em;color:var(--light);font-family:'DM Mono',monospace;}
+.nav-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:8px 20px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:none;transition:all .25s;}
+.nav-btn:hover{background:var(--ink);color:var(--bg);}
+
+/* ── TICKER ── */
+.ticker{overflow:hidden;white-space:nowrap;padding:9px 0;border-top:1px solid rgba(107,92,231,.08);border-bottom:1px solid rgba(107,92,231,.08);background:rgba(107,92,231,.03);margin-top:58px;}
+.ticker-inner{display:inline-flex;animation:tick 32s linear infinite;}
+.ti{font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--purple);padding:0 28px;opacity:.65;}
+.td{color:var(--purple);opacity:.3;padding:0 4px;font-size:7px;}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── HERO ── */
+.hero{min-height:100vh;padding:80px 36px 80px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;pointer-events:none;filter:blur(100px);animation:blobf 16s ease-in-out infinite;}
+.b1{width:560px;height:560px;background:radial-gradient(circle,var(--pa) 0%,transparent 70%);top:-140px;right:-120px;}
+.b2{width:400px;height:400px;background:radial-gradient(circle,var(--pb) 0%,transparent 70%);bottom:60px;left:-100px;animation-delay:-6s;}
+.b3{width:300px;height:300px;background:radial-gradient(circle,var(--pd2) 0%,transparent 70%);top:40%;left:42%;animation-delay:-11s;}
+@keyframes blobf{0%,100%{transform:translate(0,0)scale(1)}33%{transform:translate(28px,-22px)scale(1.07)}66%{transform:translate(-20px,30px)scale(.93)}}
+
+/* HEX CIPHER STREAM */
+#cipherBg{position:absolute;inset:0;pointer-events:none;opacity:.06;font-family:'DM Mono',monospace;font-size:10px;color:var(--purple);line-height:1.6;letter-spacing:.05em;overflow:hidden;white-space:pre;z-index:0;}
+
+.hero-inner{position:relative;z-index:1;}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:28px;opacity:0;animation:fadeUp .9s ease forwards .2s;}
+.ey-line{width:28px;height:1px;background:var(--mid);}
+.ey-text{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--mid);}
+/* SOV badge */
+.sov-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border:1px solid rgba(107,92,231,.2);border-radius:2px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--purple);margin-left:12px;}
+.sov-badge-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:lp 2s ease-in-out infinite;}
+@keyframes lp{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.7;box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+
+.hero-stack{margin-bottom:36px;opacity:0;animation:fadeUp 1s ease forwards .45s;}
+.hl{font-family:'Barlow Condensed',sans-serif;font-size:clamp(68px,13vw,148px);font-weight:900;line-height:.91;letter-spacing:-.015em;text-transform:uppercase;display:block;}
+.hl.solid{color:var(--ink);}
+.hl.ghost{color:transparent;-webkit-text-stroke:1.5px rgba(107,92,231,.22);}
+.hl.accent{background:linear-gradient(135deg,var(--purple) 0%,var(--pl) 45%,#a78bfa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:prismT 5s ease infinite;}
+@keyframes prismT{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.hero-desc{max-width:520px;font-size:12px;color:var(--mid);line-height:2;margin-bottom:44px;opacity:0;animation:fadeUp 1s ease forwards .7s;}
+
+/* count-up stats */
+.hero-stats{display:flex;gap:44px;margin-bottom:48px;opacity:0;animation:fadeUp 1s ease forwards .9s;}
+.stat-v{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--purple),var(--pl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-l{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--light);margin-top:4px;}
+
+.hero-ctas{display:flex;gap:12px;align-items:center;opacity:0;animation:fadeUp .9s ease forwards 1.05s;}
+.btn-fill{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:14px 34px;background:var(--ink);color:var(--bg);border:none;cursor:none;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.btn-fill::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 20%,rgba(107,92,231,.45) 50%,transparent 80%);transform:translateX(-100%);transition:transform .55s;}
+.btn-fill:hover::before{transform:translateX(100%);}
+.btn-fill:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(12,11,24,.2);}
+.btn-ghost{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:14px 24px;background:transparent;color:var(--mid);border:1px solid rgba(107,92,231,.18);cursor:none;transition:all .25s;}
+.btn-ghost:hover{color:var(--ink);border-color:var(--ink);}
+
+/* ── PHONE ── */
+.hero-device{position:absolute;right:6%;top:50%;transform:translateY(-50%);opacity:0;animation:fadeUp 1.3s ease forwards 1.2s;}
+@media(max-width:1000px){.hero-device{display:none;}}
+.phone-shell{width:248px;background:var(--ink2);border-radius:38px;padding:13px;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 40px 80px rgba(12,11,24,.5),0 0 80px var(--pa),inset 0 1px 0 rgba(255,255,255,.07);animation:pf 7s ease-in-out infinite;}
+@keyframes pf{0%,100%{transform:translateY(0) rotate(.4deg)}50%{transform:translateY(-16px) rotate(-.4deg)}}
+.phone-screen{background:var(--bg);border-radius:27px;height:480px;overflow:hidden;display:flex;flex-direction:column;}
+.ps-header{padding:14px 16px 10px;border-bottom:1px solid rgba(107,92,231,.07);display:flex;align-items:center;justify-content:space-between;}
+.ps-tabs{display:flex;gap:0;}
+.ps-tab{font-size:7px;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;color:var(--light);border-bottom:1px solid transparent;cursor:pointer;}
+.ps-tab.active{color:var(--purple);border-color:var(--purple);}
+.ps-badge-sm{font-size:6px;letter-spacing:.15em;text-transform:uppercase;color:var(--purple);border:1px solid rgba(107,92,231,.3);padding:2px 7px;border-radius:2px;}
+.ps-body{flex:1;padding:14px 16px;overflow:hidden;display:flex;flex-direction:column;gap:10px;}
+/* notebook mode */
+.ps-note-date{font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:var(--light);}
+.ps-note-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--ink);margin-bottom:2px;}
+.ps-note-body{font-size:8px;color:var(--mid);line-height:1.8;}
+.ps-wikilink{color:var(--purple);border-bottom:1px solid rgba(107,92,231,.3);}
+.ps-tag{display:inline-block;font-size:6px;letter-spacing:.15em;background:rgba(107,92,231,.08);color:var(--purple);padding:2px 7px;border-radius:2px;margin-right:4px;}
+.ps-divider{height:1px;background:rgba(107,92,231,.06);margin:4px 0;}
+.ps-task{display:flex;align-items:center;gap:7px;font-size:8px;color:var(--mid);margin:3px 0;}
+.ps-check{width:10px;height:10px;border:1px solid var(--faint);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.ps-check.done{background:var(--purple);border-color:var(--purple);}
+.ps-check.done::after{content:'✓';font-size:6px;color:white;}
+.ps-ai-row{background:white;border-radius:8px;padding:8px 10px;border:1px solid rgba(107,92,231,.08);}
+.ps-ai-label{font-size:6px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);margin-bottom:4px;}
+.ps-ai-text{font-size:8px;color:var(--mid);line-height:1.6;}
+.ps-typing{display:inline-block;width:2px;height:9px;background:var(--purple);animation:blink .9s step-end infinite;vertical-align:middle;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.ps-footer{padding:10px 16px;border-top:1px solid rgba(107,92,231,.06);display:flex;align-items:center;gap:8px;}
+.ps-input{flex:1;font-size:8px;color:var(--mid);font-family:'DM Mono',monospace;}
+.ps-send{width:22px;height:22px;background:var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;}
+
+/* ── SHARED SECTION ── */
+.sec{padding:96px 36px;max-width:1120px;margin:0 auto;}
+.sec-full{padding:96px 36px;}
+.stag{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
+.stag-l{width:22px;height:1px;background:var(--purple);}
+.stag-t{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--purple);}
+.sh{font-family:'Barlow Condensed',sans-serif;font-size:clamp(44px,7vw,76px);font-weight:900;text-transform:uppercase;line-height:.93;letter-spacing:-.01em;margin-bottom:20px;}
+.sb{font-size:12px;color:var(--mid);line-height:1.95;max-width:540px;}
+
+/* ── DIVIDER ── */
+.div{height:1px;background:linear-gradient(to right,transparent,rgba(107,92,231,.1),transparent);}
+
+/* ── NOTEBOOK SECTION ── */
+.nb-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:56px;}
+@media(max-width:900px){.nb-grid{grid-template-columns:1fr;}}
+.nb-mock{background:var(--white);border:1px solid rgba(107,92,231,.08);border-radius:4px;overflow:hidden;box-shadow:0 8px 40px rgba(12,11,24,.05);}
+.nb-titlebar{padding:12px 16px;background:var(--bg2);border-bottom:1px solid rgba(107,92,231,.06);display:flex;align-items:center;gap:8px;}
+.nb-dot{width:9px;height:9px;border-radius:50%;}
+.nb-filename{font-size:9px;letter-spacing:.15em;color:var(--mid);margin-left:6px;}
+.nb-toolbar{padding:8px 16px;border-bottom:1px solid rgba(107,92,231,.05);display:flex;gap:16px;}
+.nb-tool{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--light);}
+.nb-tool.active{color:var(--purple);}
+.nb-content{padding:24px 24px;font-size:11px;line-height:2;color:var(--mid);}
+.nb-h1{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--ink);margin-bottom:4px;}
+.nb-meta{font-size:8px;letter-spacing:.15em;color:var(--light);margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap;}
+.nb-tag{background:rgba(107,92,231,.07);color:var(--purple);padding:2px 8px;border-radius:2px;font-size:7px;letter-spacing:.15em;}
+.nb-p{font-size:11px;color:var(--mid);line-height:1.9;margin-bottom:10px;}
+.nb-link{color:var(--purple);border-bottom:1px dashed rgba(107,92,231,.4);text-decoration:none;}
+.nb-bold{color:var(--ink);font-weight:500;}
+.nb-task-section{margin-top:16px;}
+.nb-task-h{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--light);margin-bottom:8px;}
+.nb-task{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(107,92,231,.04);font-size:10px;color:var(--mid);}
+.nb-cb{width:12px;height:12px;border:1px solid var(--faint);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.nb-cb.done{background:var(--purple);border-color:var(--purple);color:white;font-size:7px;}
+.nb-agent{margin-top:16px;background:linear-gradient(135deg,rgba(107,92,231,.04),rgba(96,165,250,.04));border:1px solid rgba(107,92,231,.1);border-radius:4px;padding:14px 16px;}
+.nb-agent-header{font-size:7px;letter-spacing:.22em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.nb-agent-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:lp 2s ease-in-out infinite;}
+.nb-agent-text{font-size:10px;color:var(--mid);line-height:1.8;}
+.nb-cursor{display:inline-block;width:1.5px;height:11px;background:var(--purple);animation:blink .9s step-end infinite;vertical-align:middle;}
+.nb-enc{display:inline-block;background:var(--ink);color:var(--ink);border-radius:3px;padding:0 6px;cursor:pointer;transition:all .3s;position:relative;}
+.nb-enc:hover{color:var(--purple);}
+.nb-enc::after{content:'🔒';font-size:8px;position:absolute;right:-14px;top:50%;transform:translateY(-50%);opacity:.5;}
+
+/* features list on right */
+.nb-features{display:flex;flex-direction:column;gap:20px;}
+.nb-feat{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-bottom:1px solid rgba(107,92,231,.07);}
+.nb-feat-icon{width:36px;height:36px;border:1px solid rgba(107,92,231,.12);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--white);}
+.nb-feat-t{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;text-transform:uppercase;margin-bottom:4px;}
+.nb-feat-d{font-size:10px;color:var(--mid);line-height:1.7;}
+
+/* ── PLUGINS ── */
+.plugins-section{background:var(--bg2);padding:96px 36px;}
+.plugins-inner{max-width:1120px;margin:0 auto;}
+.plugins-header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:48px;}
+.plugins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px;background:rgba(107,92,231,.07);}
+.plugin-card{background:var(--bg2);padding:28px;transition:all .3s;cursor:none;position:relative;overflow:hidden;}
+.plugin-card:hover{background:var(--white);transform:translateY(-3px);z-index:2;box-shadow:0 12px 40px rgba(12,11,24,.08);}
+.plugin-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--pa),var(--pb));opacity:0;transition:opacity .3s;}
+.plugin-card:hover::before{opacity:.5;}
+.pc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;position:relative;z-index:1;}
+.pc-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--white);border:1px solid rgba(107,92,231,.08);}
+.pc-status{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;}
+.pc-dot{width:6px;height:6px;border-radius:50%;}
+.pc-dot.connected{background:var(--green);animation:lp 2.5s ease-in-out infinite;}
+.pc-dot.available{background:var(--amber);}
+.pc-dot.local{background:var(--blue);}
+.pc-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;text-transform:uppercase;margin-bottom:4px;position:relative;z-index:1;}
+.pc-sub{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);margin-bottom:10px;position:relative;z-index:1;}
+.pc-desc{font-size:10px;color:var(--mid);line-height:1.7;margin-bottom:16px;position:relative;z-index:1;}
+.pc-btn{display:block;width:100%;padding:9px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.18em;text-transform:uppercase;text-align:center;border:1px solid rgba(107,92,231,.2);background:transparent;color:var(--mid);cursor:none;transition:all .25s;position:relative;z-index:1;}
+.pc-btn.active{background:rgba(107,92,231,.08);color:var(--purple);border-color:rgba(107,92,231,.3);}
+.pc-btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.pc-enc{display:inline-block;padding:0 6px;background:rgba(107,92,231,.08);border-radius:3px;font-size:9px;letter-spacing:.1em;color:var(--purple);margin-top:6px;}
+
+/* ── SRI ── */
+.sri-section{padding:96px 36px;background:var(--bg);}
+.sri-inner{max-width:1120px;margin:0 auto;}
+.sri-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:52px;}
+@media(max-width:900px){.sri-grid{grid-template-columns:1fr;}}
+.sri-canvas-wrap{background:var(--white);border:1px solid rgba(107,92,231,.08);overflow:hidden;}
+.sri-ch{padding:12px 18px;border-bottom:1px solid rgba(107,92,231,.05);display:flex;align-items:center;gap:10px;}
+.sri-title{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);}
+.sri-live{display:flex;align-items:center;gap:5px;font-size:8px;color:var(--green);letter-spacing:.12em;margin-left:auto;}
+.sri-live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:lp 2s ease-in-out infinite;}
+#sriCanvas{width:100%;height:260px;display:block;}
+.sri-stats{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:rgba(107,92,231,.06);margin-top:2px;}
+.sri-stat{background:var(--white);padding:16px 20px;}
+.sri-sv{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--purple),var(--pl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sri-sl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--light);margin-top:3px;}
+.sri-steps{display:flex;flex-direction:column;gap:0;}
+.sri-step{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid rgba(107,92,231,.06);}
+.sri-step-n{font-size:8px;letter-spacing:.2em;color:var(--light);padding-top:3px;min-width:24px;}
+.sri-step-t{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;text-transform:uppercase;margin-bottom:4px;}
+.sri-step-d{font-size:10px;color:var(--mid);line-height:1.7;}
+
+/* ── ENCRYPTED TELEGRAM EFFECT ── */
+.tg-section{padding:96px 36px;background:var(--ink2);position:relative;overflow:hidden;}
+.tg-inner{max-width:900px;margin:0 auto;position:relative;z-index:1;}
+.tg-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(107,92,231,.15) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(96,165,250,.07) 0%,transparent 50%);pointer-events:none;}
+.tg-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(40px,6vw,68px);font-weight:900;text-transform:uppercase;color:rgba(255,255,255,.9);line-height:.95;margin-bottom:48px;}
+.tg-title em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;text-transform:none;background:linear-gradient(135deg,#c4b8ff 0%,#90d8ff 50%,#a0ffda 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tg-messages{display:flex;flex-direction:column;gap:16px;}
+.tg-msg{display:flex;gap:14px;align-items:flex-start;opacity:0;transform:translateY(20px);transition:all .6s ease;}
+.tg-msg.vis{opacity:1;transform:translateY(0);}
+.tg-avatar{width:32px;height:32px;border-radius:50%;background:rgba(107,92,231,.2);border:1px solid rgba(107,92,231,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--pl);}
+.tg-bubble{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);border-radius:0 12px 12px 12px;padding:12px 16px;max-width:500px;}
+.tg-bubble.right{background:rgba(107,92,231,.15);border-color:rgba(107,92,231,.2);border-radius:12px 0 12px 12px;margin-left:auto;}
+.tg-bubble-text{font-size:11px;color:rgba(255,255,255,.75);line-height:1.7;}
+.tg-bubble-text.encrypted{font-family:'DM Mono',monospace;font-size:10px;color:rgba(107,92,231,.6);letter-spacing:.05em;cursor:pointer;transition:all .4s;}
+.tg-bubble-text.encrypted:hover{color:rgba(255,255,255,.9);}
+.tg-bubble-text.encrypted::before{content:'🔒 ';font-size:9px;}
+.tg-time{font-size:7px;letter-spacing:.15em;color:rgba(255,255,255,.25);margin-top:6px;}
+.tg-lock-badge{display:inline-flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:rgba(107,92,231,.7);border:1px solid rgba(107,92,231,.2);padding:4px 10px;border-radius:3px;margin-top:10px;}
+
+/* ── MANIFESTO ── */
+.manifesto{background:var(--ink);color:var(--bg);padding:96px 36px;position:relative;overflow:hidden;}
+.manifesto::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 15% 50%,rgba(107,92,231,.12) 0%,transparent 55%),radial-gradient(ellipse at 85% 20%,rgba(96,165,250,.06) 0%,transparent 50%);pointer-events:none;}
+.manifesto-inner{max-width:920px;margin:0 auto;position:relative;}
+.manifesto .stag-l{background:var(--pl);}
+.manifesto .stag-t{color:var(--pl);}
+.manifesto .sh{color:var(--bg);}
+.manifesto .sh em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;background:linear-gradient(135deg,#c4b8ff 0%,#90d8ff 50%,#a0ffda 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.m-lines{margin-top:52px;}
+.m-line{display:flex;align-items:baseline;gap:22px;padding:22px 0;border-bottom:1px solid rgba(248,246,242,.05);opacity:0;transform:translateX(-20px);transition:all .65s ease;}
+.m-line.vis{opacity:1;transform:translateX(0);}
+.m-n{font-size:8px;letter-spacing:.3em;color:rgba(248,246,242,.18);min-width:26px;}
+.m-t{font-family:'Barlow Condensed',sans-serif;font-size:clamp(22px,3.5vw,36px);font-weight:800;text-transform:uppercase;line-height:1.15;color:rgba(248,246,242,.8);}
+.m-t em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;text-transform:none;color:white;font-size:1.08em;}
+
+/* ── WAITLIST ── */
+.waitlist{padding:96px 36px;text-align:center;position:relative;overflow:hidden;}
+.waitlist::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(107,92,231,.08) 0%,transparent 60%);pointer-events:none;}
+.wl-inner{max-width:640px;margin:0 auto;position:relative;}
+.wl-form{display:flex;margin-top:44px;border:1px solid rgba(107,92,231,.15);background:var(--white);box-shadow:0 4px 30px rgba(12,11,24,.05);}
+.wl-input{flex:1;padding:15px 20px;border:none;background:transparent;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);outline:none;}
+.wl-input::placeholder{color:var(--light);}
+.wl-submit{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:15px 26px;background:var(--ink);color:var(--bg);border:none;cursor:none;white-space:nowrap;position:relative;overflow:hidden;}
+.wl-submit::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(107,92,231,.5),transparent);transform:translateX(-100%);transition:transform .5s;}
+.wl-submit:hover::before{transform:translateX(100%);}
+.wl-note{font-size:9px;color:var(--light);margin-top:12px;letter-spacing:.12em;display:block;}
+.wl-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:28px;}
+.wl-badge{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);border:1px solid rgba(107,92,231,.1);padding:5px 12px;border-radius:100px;background:rgba(107,92,231,.03);}
+.wl-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:lp 2.5s ease-in-out infinite;}
+
+/* ── INSTALL ── */
+.install{padding:96px 36px;background:var(--bg2);text-align:center;}
+.install-inner{max-width:800px;margin:0 auto;}
+.inst-grid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:44px;}
+.inst-btn{display:flex;align-items:center;gap:10px;padding:13px 26px;background:var(--white);border:1px solid rgba(107,92,231,.1);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-decoration:none;color:var(--ink);cursor:none;transition:all .3s;box-shadow:0 2px 10px rgba(0,0,0,.03);position:relative;overflow:hidden;}
+.inst-btn::after{content:'';position:absolute;inset:-1px;background:linear-gradient(135deg,rgba(107,92,231,.4),rgba(96,165,250,.4),rgba(100,255,200,.3));background-size:300% 300%;animation:prismBorder 4s ease infinite;opacity:0;transition:opacity .3s;z-index:-1;}
+.inst-btn:hover::after{opacity:.5;}
+.inst-btn:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.07);}
+@keyframes prismBorder{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* ── FOOTER ── */
+footer{padding:36px 36px;border-top:1px solid rgba(107,92,231,.07);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.f-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;letter-spacing:.06em;color:var(--ink);}
+.f-logo span{color:var(--light);}
+.f-note{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--light);}
+
+/* ── SCROLL REVEAL ── */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease;}
+.rv.vis{opacity:1;transform:translateY(0);}
+.rv2{opacity:0;transform:translateX(-24px);transition:opacity .8s ease,transform .8s ease;}
+.rv2.vis{opacity:1;transform:translateX(0);}
+
+/* ── ENC HEADING EFFECT ── */
+.enc-head{display:inline-block;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SOV SCORE ── */
+.sov-score-wrap{display:flex;align-items:center;gap:16px;margin-top:20px;padding:16px 20px;background:var(--white);border:1px solid rgba(107,92,231,.08);border-radius:4px;max-width:340px;}
+.sov-score-ring{width:52px;height:52px;position:relative;flex-shrink:0;}
+.sov-score-ring svg{width:52px;height:52px;transform:rotate(-90deg);}
+.sov-ring-bg{fill:none;stroke:var(--faint);stroke-width:4;}
+.sov-ring-fg{fill:none;stroke:var(--purple);stroke-width:4;stroke-linecap:round;stroke-dasharray:138;stroke-dashoffset:14;animation:ringAnim 2s ease forwards 1.5s;}
+.sov-ring-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:var(--purple);}
+.sov-score-info{}
+.sov-score-label{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--light);margin-bottom:4px;}
+.sov-score-val{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--ink);}
+@keyframes ringAnim{from{stroke-dashoffset:138}to{stroke-dashoffset:14}}
+
+/* AES key display */
+.aes-key{font-size:8px;font-family:'DM Mono',monospace;color:var(--purple);letter-spacing:.06em;opacity:.5;word-break:break-all;padding:8px 12px;background:rgba(107,92,231,.04);border:1px solid rgba(107,92,231,.08);border-radius:2px;margin-top:8px;}
+
+/* PRICING */
+.pricing-section{padding:96px 36px;background:var(--bg);}
+.pricing-inner{max-width:1120px;margin:0 auto;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px;background:rgba(107,92,231,.06);}
+@media(max-width:768px){.pricing-grid{grid-template-columns:1fr;}}
+.price-card{background:var(--bg);padding:40px 32px;}
+.price-card.feat{background:var(--ink);position:relative;overflow:hidden;}
+.price-card.feat::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(107,92,231,.2),transparent 60%);pointer-events:none;}
+.price-plan{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--light);margin-bottom:18px;display:block;}
+.feat .price-plan{color:rgba(255,255,255,.3);}
+.price-num{font-family:'Barlow Condensed',sans-serif;font-size:60px;font-weight:900;line-height:1;margin-bottom:6px;}
+.feat .price-num{color:white;}
+.price-per{font-size:9px;color:var(--light);margin-bottom:24px;display:block;}
+.feat .price-per{color:rgba(255,255,255,.3);}
+.price-list{display:flex;flex-direction:column;gap:0;margin-bottom:32px;}
+.pl-item{font-size:10px;color:var(--mid);padding:8px 0;border-bottom:1px solid rgba(107,92,231,.06);display:flex;align-items:center;gap:8px;}
+.feat .pl-item{color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.05);}
+.pl-item::before{content:'◆';color:var(--purple);font-size:6px;}
+.feat .pl-item::before{color:var(--pl);}
+.price-btn{display:block;width:100%;padding:13px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;text-align:center;border:1px solid rgba(107,92,231,.2);background:transparent;color:var(--mid);cursor:none;transition:all .25s;}
+.price-btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.feat .price-btn{background:white;color:var(--ink);border-color:white;}
+.feat .price-btn:hover{background:rgba(255,255,255,.85);}
+
+/* TOOLTIP */
+[data-tip]{position:relative;}
+[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-size:8px;letter-spacing:.12em;padding:4px 10px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;z-index:100;}
+[data-tip]:hover::after{opacity:1;}
+
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-mid{display:none;}
+  #liveclock{display:none;}
+  .hero{padding:70px 20px 60px;}
+  .sec{padding:70px 20px;}
+  .plugins-section{padding:70px 20px;}
+  .sri-section{padding:70px 20px;}
+  .tg-section{padding:70px 20px;}
+  .manifesto{padding:70px 20px;}
+  .waitlist{padding:70px 20px;}
+  .install{padding:70px 20px;}
+  .pricing-section{padding:70px 20px;}
+  footer{padding:28px 20px;flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="cur"></div>
+<div id="cur-r"></div>
+<div id="cur-trail"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">SOBERANO<span>AI</span></a>
+  <ul class="nav-mid">
+    <li><a href="#notebook">Notebook</a></li>
+    <li><a href="#plugins">Plugins</a></li>
+    <li><a href="#sri">SRI</a></li>
+    <li><a href="#manifesto">Manifesto</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <div class="nav-right">
+    <span id="liveclock">--:--:--</span>
+    <button class="nav-btn" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join Waitlist</button>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="tkr">
+    <span class="ti">Sovereign AI OS</span><span class="td">◆</span>
+    <span class="ti">SRI Routing</span><span class="td">◆</span>
+    <span class="ti">LoRA Engine</span><span class="td">◆</span>
+    <span class="ti">AES-256 Vault</span><span class="td">◆</span>
+    <span class="ti">Zettelkasten</span><span class="td">◆</span>
+    <span class="ti">Enclave Cloud</span><span class="td">◆</span>
+    <span class="ti">Local Inference</span><span class="td">◆</span>
+    <span class="ti">Zero Tracking</span><span class="td">◆</span>
+    <span class="ti">RAG Engine</span><span class="td">◆</span>
+    <span class="ti">Ollama + Exo</span><span class="td">◆</span>
+    <span class="ti">TOR Optional</span><span class="td">◆</span>
+    <span class="ti">Multi-Agent</span><span class="td">◆</span>
+    <span class="ti">Daily Notes</span><span class="td">◆</span>
+    <span class="ti">Kanban Tasks</span><span class="td">◆</span>
+    <span class="ti">Sovereign AI OS</span><span class="td">◆</span>
+    <span class="ti">SRI Routing</span><span class="td">◆</span>
+    <span class="ti">LoRA Engine</span><span class="td">◆</span>
+    <span class="ti">AES-256 Vault</span><span class="td">◆</span>
+    <span class="ti">Zettelkasten</span><span class="td">◆</span>
+    <span class="ti">Enclave Cloud</span><span class="td">◆</span>
+    <span class="ti">Local Inference</span><span class="td">◆</span>
+    <span class="ti">Zero Tracking</span><span class="td">◆</span>
+    <span class="ti">RAG Engine</span><span class="td">◆</span>
+    <span class="ti">Ollama + Exo</span><span class="td">◆</span>
+    <span class="ti">TOR Optional</span><span class="td">◆</span>
+    <span class="ti">Multi-Agent</span><span class="td">◆</span>
+    <span class="ti">Daily Notes</span><span class="td">◆</span>
+    <span class="ti">Kanban Tasks</span><span class="td">◆</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div id="cipherBg"></div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="ey-line"></div>
+      <span class="ey-text">/ SRI · Enclave Cloud · Local Inference</span>
+      <span class="sov-badge"><span class="sov-badge-dot"></span>Sovereignty active</span>
+    </div>
+    <div class="hero-stack">
+      <span class="hl solid">YOUR AI.</span>
+      <span class="hl ghost">YOUR DATA.</span>
+      <span class="hl ghost">YOUR RULES.</span>
+      <span class="hl accent" id="heroAccent">FREE FOREVER.</span>
+    </div>
+    <p class="hero-desc">A sovereign AI notebook OS. Write notes, manage tasks, run local models, connect your tools — all under one encrypted, private, free interface. Your data never leaves without permission.</p>
+    <div class="hero-stats">
+      <div><div class="stat-v" data-target="100" data-suffix="%">0%</div><div class="stat-l">Private by default</div></div>
+      <div><div class="stat-v" data-target="0" data-suffix="">0</div><div class="stat-l">Data collected</div></div>
+      <div><div class="stat-v" data-target="8" data-suffix="B">0B</div><div class="stat-l">Local model params</div></div>
+    </div>
+    <div class="hero-ctas">
+      <button class="btn-fill" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join Waitlist →</button>
+      <button class="btn-ghost" onclick="document.getElementById('notebook').scrollIntoView({behavior:'smooth'})">See the app ↓</button>
+    </div>
+
+    <!-- SOV SCORE -->
+    <div class="sov-score-wrap rv" style="margin-top:32px;">
+      <div class="sov-score-ring">
+        <svg viewBox="0 0 52 52">
+          <circle class="sov-ring-bg" cx="26" cy="26" r="22"/>
+          <circle class="sov-ring-fg" cx="26" cy="26" r="22"/>
+        </svg>
+        <div class="sov-ring-num">9</div>
+      </div>
+      <div class="sov-score-info">
+        <div class="sov-score-label">Sovereignty Score</div>
+        <div class="sov-score-val">LOCAL · ENCRYPTED · PASSKEY</div>
+        <div class="aes-key" id="aesKey">2f8b3a...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHONE -->
+  <div class="hero-device">
+    <div class="phone-shell">
+      <div class="phone-screen">
+        <div class="ps-header">
+          <div class="ps-tabs">
+            <div class="ps-tab active">Notes</div>
+            <div class="ps-tab">Tasks</div>
+            <div class="ps-tab">Chat</div>
+          </div>
+          <span class="ps-badge-sm">Local · 8B</span>
+        </div>
+        <div class="ps-body">
+          <div class="ps-note-date" id="psDate">Today · Thursday</div>
+          <div class="ps-note-title">Daily Note</div>
+          <div style="margin-bottom:6px;">
+            <span class="ps-tag">#morning</span>
+            <span class="ps-tag">#work</span>
+          </div>
+          <div class="ps-note-body">
+            Review <span class="ps-wikilink">[[Series A Narrative]]</span> before call. Agent drafted the intro — looks solid. Connect <span class="ps-wikilink">[[Regulatory Moat]]</span> note.
+          </div>
+          <div class="ps-divider"></div>
+          <div class="ps-task"><div class="ps-check done">✓</div>Morning review</div>
+          <div class="ps-task"><div class="ps-check done">✓</div>Review SRI routing logs</div>
+          <div class="ps-task"><div class="ps-check"></div>Update investor deck</div>
+          <div class="ps-task"><div class="ps-check"></div>Call with team at 15h</div>
+          <div class="ps-divider"></div>
+          <div class="ps-ai-row">
+            <div class="ps-ai-label"><span style="color:var(--green)">◆</span> Agent · Local 8B</div>
+            <div class="ps-ai-text">Summarising [[Series A]] — three defensible pillars: regulatory, architecture, distribution moat<span class="ps-typing"></span></div>
+          </div>
+        </div>
+        <div class="ps-footer">
+          <div class="ps-input">Ask your AI...</div>
+          <div class="ps-send">→</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position:absolute;bottom:28px;left:36px;display:flex;align-items:center;gap:10px;opacity:0;animation:fadeUp .9s ease forwards 1.7s;">
+    <span style="font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--light);">Scroll</span>
+    <div style="width:30px;height:1px;background:linear-gradient(to right,var(--light),transparent);animation:scrollIn 2.5s ease-in-out infinite;"></div>
+  </div>
+</section>
+
+<style>
+@keyframes scrollIn{0%{transform:scaleX(0);transform-origin:left}50%{transform:scaleX(1);transform-origin:left}51%{transform:scaleX(1);transform-origin:right}100%{transform:scaleX(0);transform-origin:right}}
+</style>
+
+<div class="div"></div>
+
+<!-- NOTEBOOK SECTION -->
+<div id="notebook" style="background:var(--bg);">
+  <div class="sec">
+    <div class="stag rv"><div class="stag-l"></div><span class="stag-t">01 / The Notebook</span></div>
+    <h2 class="sh rv enc-head" data-enc="YOUR NOTES,">YOUR NOTES,</h2>
+    <h2 class="sh rv" style="color:transparent;-webkit-text-stroke:1.5px rgba(107,92,231,.25)">YOUR BRAIN.</h2>
+    <p class="sb rv">Write daily notes, build a Zettelkasten with <span style="color:var(--purple)">[[wikilinks]]</span>, manage tasks on Kanban boards — all encrypted locally. Your AI agent lives right inside your notes, powered by local models.</p>
+
+    <div class="nb-grid">
+      <!-- MOCK NOTEBOOK -->
+      <div class="nb-mock rv">
+        <div class="nb-titlebar">
+          <div class="nb-dot" style="background:#ff5f57;"></div>
+          <div class="nb-dot" style="background:#ffbd2e;"></div>
+          <div class="nb-dot" style="background:#28c840;"></div>
+          <span class="nb-filename">daily-2025-03-05.md</span>
+        </div>
+        <div class="nb-toolbar">
+          <span class="nb-tool active">Edit</span>
+          <span class="nb-tool">Preview</span>
+          <span class="nb-tool">Graph</span>
+          <span class="nb-tool">Tasks</span>
+        </div>
+        <div class="nb-content">
+          <div class="nb-h1">Daily Note</div>
+          <div class="nb-meta">
+            <span>2025-03-05 · Thursday</span>
+            <span class="nb-tag">#morning</span>
+            <span class="nb-tag">#orki</span>
+          </div>
+          <p class="nb-p">Review <a class="nb-link">[[Series A Narrative]]</a> before the investor call. Agent drafted the intro — see below. Connect to <a class="nb-link">[[Regulatory Moat Analysis]]</a> and <a class="nb-link">[[Local Inference Architecture]]</a>.</p>
+          <p class="nb-p"><span class="nb-bold">Key thesis:</span> privacy is a product feature, not a compliance checkbox. Sovereign AI creates value through defensible <span class="nb-enc" title="Hover to reveal">encrypted insight</span>.</p>
+          <div class="nb-task-section">
+            <div class="nb-task-h">Today's Tasks</div>
+            <div class="nb-task"><div class="nb-cb done">✓</div>Morning review + journal</div>
+            <div class="nb-task"><div class="nb-cb done">✓</div>Review SRI routing logs</div>
+            <div class="nb-task"><div class="nb-cb"></div>Update investor deck slides</div>
+            <div class="nb-task"><div class="nb-cb"></div>Call with team @ 15:00</div>
+            <div class="nb-task"><div class="nb-cb"></div>Publish Soberano waitlist</div>
+          </div>
+          <div class="nb-agent">
+            <div class="nb-agent-header"><span class="nb-agent-dot"></span>Agent · Local 8B · Private</div>
+            <div class="nb-agent-text" id="nbAgentText">Analysed [[Series A Narrative]]. The core thesis centres on three defensible pillars: regulatory moat, architecture moat, and distribution moat. See [[Regulatory Moat Analysis]] for depth.<span class="nb-cursor"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURES -->
+      <div class="nb-features rv">
+        <div class="nb-feat">
+          <div class="nb-feat-icon">📝</div>
+          <div>
+            <div class="nb-feat-t">Daily Notes</div>
+            <div class="nb-feat-d">Every day starts with an encrypted daily note. Date-stamped, private, yours. Your AI reads your notes to help you think.</div>
+          </div>
+        </div>
+        <div class="nb-feat">
+          <div class="nb-feat-icon">🔗</div>
+          <div>
+            <div class="nb-feat-t">[[Wikilinks]]</div>
+            <div class="nb-feat-d">Zettelkasten-style bidirectional links between notes. Build a private knowledge graph that grows with you.</div>
+          </div>
+        </div>
+        <div class="nb-feat">
+          <div class="nb-feat-icon">✅</div>
+          <div>
+            <div class="nb-feat-t">Tasks + Kanban</div>
+            <div class="nb-feat-d">Tasks live inside your notes. Flip to Kanban view for project management. All local, all encrypted, no Notion login required.</div>
+          </div>
+        </div>
+        <div class="nb-feat">
+          <div class="nb-feat-icon">🤖</div>
+          <div>
+            <div class="nb-feat-t">Inline Agent</div>
+            <div class="nb-feat-d">Your local AI reads your vault and responds inline. Summarise notes, draft emails, generate tasks — zero cloud exposure.</div>
+          </div>
+        </div>
+        <div class="nb-feat">
+          <div class="nb-feat-icon">🔒</div>
+          <div>
+            <div class="nb-feat-t">Encrypted At Rest</div>
+            <div class="nb-feat-d">Every note, tag, and [[link]] is AES-256 encrypted. Passkey-locked. Even if someone gets your device, your vault is sealed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- PLUGINS -->
+<div id="plugins" class="plugins-section">
+  <div class="plugins-inner">
+    <div class="plugins-header">
+      <div>
+        <div class="stag rv"><div class="stag-l"></div><span class="stag-t">02 / Plugin Ecosystem</span></div>
+        <h2 class="sh rv enc-head" data-enc="CONNECT YOUR">CONNECT YOUR</h2>
+        <h2 class="sh rv" style="color:transparent;-webkit-text-stroke:1.5px rgba(107,92,231,.25)">WORLD.</h2>
+      </div>
+      <p class="sb rv" style="max-width:360px;">Every plugin is sovereignty-preserving. Connect the tools you already use — your data flows through encrypted channels you control. SRI routes intelligently between all of them.</p>
+    </div>
+    <div class="plugins-grid rv">
+
+      <div class="plugin-card">
+        <div class="pc-top">
+          <div class="pc-icon">🦙</div>
+          <div class="pc-status"><div class="pc-dot local"></div><span style="color:var(--blue);">Local</span></div>
+        </div>
+        <div class="pc-name">Ollama</div>
+        <div class="pc-sub">// Local model runtime</div>
+        <div class="pc-desc">Run any open-source model locally via Ollama. Llama, Mistral, Qwen, DeepSeek — download once, run forever. SRI routes to Ollama automatically.</div>
+        <div class="pc-enc">qwen2.5:7b · mistral:7b · llama3.2:3b</div>
+        <button class="pc-btn active" style="margin-top:12px;" data-tip="Runs 100% on device">◆ Running locally</button>
+      </div>
+
+      <div class="plugin-card">
+        <div class="pc-top">
+          <div class="pc-icon">📅</div>
+          <div class="pc-status"><div class="pc-dot connected"></div><span style="color:var(--green);">Connected</span></div>
+        </div>
+        <div class="pc-name">Google</div>
+        <div class="pc-sub">// Calendar · Drive · Gmail</div>
+        <div class="pc-desc">Read events, access Drive files, draft emails. Agent has read access scoped to what you allow. No data stored externally.</div>
+        <button class="pc-btn active" data-tip="Opt-in read access only">◆ Connected</button>
+      </div>
+
+      <div class="plugin-card">
+        <div class="pc-top">
+          <div class="pc-icon">🛡️</div>
+          <div class="pc-status"><div class="pc-dot connected"></div><span style="color:var(--green);">Connected</span></div>
+        </div>
+        <div class="pc-name">Proton</div>
+        <div class="pc-sub">// Mail · Calendar · Drive</div>
+        <div class="pc-desc">End-to-end encrypted mail and calendar via Proton. The most private way to connect your communications to your AI notebook.</div>
+        <button class="pc-btn active" data-tip="E2E encrypted always">◆ Connected</button>
+      </div>
+
+      <div class="plugin-card">
+        <div class="pc-top">
+          <div class="pc-icon">🌐</div>
+          <div class="pc-status"><div class="pc-dot connected"></div><span style="color:var(--green);">Connected</span></div>
+        </div>
+        <div class="pc-name">Tailscale</div>
+        <div class="pc-sub">// Secure mesh networking</div>
+        <div class="pc-desc">Access your Soberano vault and models from any device via Tailscale's zero-trust mesh. Your private network, your nodes.</div>
+        <button class="pc-btn active" data-tip="Zero-trust mesh VPN">◆ Mesh active</button>
+      </div>
+
+      <div class="plugin-card">
+        <div class="pc-top">
+          <div class="pc-icon">⚡</div>
+          <div class="pc-status"><div class="pc-dot local"></div><span style="color:var(--blue);">Distributed</span></div>
+        </div>
+        <div class="pc-name">Exo Labs</div>
+        <div class="pc-sub">// Distributed inference mesh</div>
+        <div class="pc-desc">Share RAM across devices for larger models. Run 70B models across your phone, laptop and home server without cloud exposure.</div>
+        <div class="pc-enc">RAM sharing · co-hosted inference</div>
+        <button class="pc-btn" style="margin-top:12px;" data-tip="Peer-to-peer model mesh">+ Add plugin</button>
+      </div>
+
+      <div class="plugin-card">
+        <div class="pc-top">
+          <div class="pc-icon">♦️</div>
+          <div class="pc-status"><div class="pc-dot available"></div><span style="color:var(--amber);">Available</span></div>
+        </div>
+        <div class="pc-name">Anthropic</div>
+        <div class="pc-sub">// Claude escalation fallback</div>
+        <div class="pc-desc">When a task exceeds local capacity, SRI can escalate to Claude via Anthropic API. Sandboxed to a folder. TOR optional. Private by design.</div>
+        <button class="pc-btn" data-tip="Sandboxed cloud fallback">+ Connect with key</button>
+      </div>
+
+      <div class="plugin-card">
+        <div class="pc-top">
+          <div class="pc-icon">📓</div>
+          <div class="pc-status"><div class="pc-dot connected"></div><span style="color:var(--green);">Connected</span></div>
+        </div>
+        <div class="pc-name">Obsidian</div>
+        <div class="pc-sub">// Notes vault bridge</div>
+        <div class="pc-desc">Import your existing Obsidian vault. All [[wikilinks]], tags, and backlinks transfer. Your years of notes, now with a private local AI.</div>
+        <button class="pc-btn active" data-tip="Vault bridge, zero export">◆ Vault synced</button>
+      </div>
+
+      <div class="plugin-card" style="border:1px dashed rgba(107,92,231,.15);">
+        <div class="pc-top">
+          <div class="pc-icon" style="opacity:.4;">+</div>
+        </div>
+        <div class="pc-name" style="opacity:.4;">More</div>
+        <div class="pc-sub">// Coming soon</div>
+        <div class="pc-desc" style="opacity:.6;">Notion bridge, Linear, GitHub, Slack read access, custom endpoints. Plugin API open to developers.</div>
+        <button class="pc-btn" data-tip="Suggest a plugin">→ Request a plugin</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- SRI -->
+<div id="sri" class="sri-section">
+  <div class="sri-inner">
+    <div class="stag rv"><div class="stag-l"></div><span class="stag-t">03 / SRI Architecture</span></div>
+    <div class="sri-grid">
+      <div>
+        <h2 class="sh rv enc-head" data-enc="SOVEREIGN">SOVEREIGN</h2>
+        <h2 class="sh rv" style="color:transparent;-webkit-text-stroke:1.5px rgba(107,92,231,.25);margin-bottom:20px;">ROUTING.</h2>
+        <p class="sb rv" style="margin-bottom:28px;">Semantic Routing Intelligence understands your query and dispatches it to the best model — local first, always. When cloud is needed, every model is containerised to a specific folder. The private AI sanitises memories and stores them in your vault.</p>
+        <div class="sri-steps rv">
+          <div class="sri-step">
+            <span class="sri-step-n">01</span>
+            <div><div class="sri-step-t">Sandboxed Cloud</div><p class="sri-step-d">Cloud models see only their assigned folder. No access to your full vault. Ever.</p></div>
+          </div>
+          <div class="sri-step">
+            <span class="sri-step-n">02</span>
+            <div><div class="sri-step-t">Memory Sanitisation</div><p class="sri-step-d">Private AI cleanses cloud responses before storing locally. No raw cloud memory persists.</p></div>
+          </div>
+          <div class="sri-step">
+            <span class="sri-step-n">03</span>
+            <div><div class="sri-step-t">TOR Toggle</div><p class="sri-step-d">Cloud calls route through TOR optionally. Your IP never reaches the model provider.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="rv">
+        <div class="sri-canvas-wrap">
+          <div class="sri-ch">
+            <div class="sri-live-dot"></div>
+            <span class="sri-title">SRI Routing</span>
+            <span class="sri-live">Live</span>
+          </div>
+          <canvas id="sriCanvas"></canvas>
+        </div>
+        <div class="sri-stats">
+          <div class="sri-stat"><div class="sri-sv" data-count="94">0</div><div class="sri-sl">% queries stay local</div></div>
+          <div class="sri-stat"><div class="sri-sv" data-count="80" data-prefix="<">&lt;0ms</div><div class="sri-sl">avg response time</div></div>
+          <div class="sri-stat"><div class="sri-sv" data-count="256" data-suffix="-bit">0-bit</div><div class="sri-sl">AES encryption</div></div>
+          <div class="sri-stat"><div class="sri-sv" data-count="0">0</div><div class="sri-sl">data points collected</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- TELEGRAM ENCRYPTED EFFECT -->
+<div class="tg-section">
+  <div class="tg-inner">
+    <div class="stag"><div class="stag-l" style="background:var(--pl);"></div><span class="stag-t" style="color:var(--pl);">04 / Privacy in action</span></div>
+    <h2 class="tg-title">WHAT OTHERS SEE<br><em>vs. what you own.</em></h2>
+    <div class="tg-messages">
+      <div class="tg-msg">
+        <div class="tg-avatar">AI</div>
+        <div>
+          <div class="tg-bubble">
+            <div class="tg-bubble-text">Your Series A narrative is strong. The regulatory moat centres on the EU AI Act compliance gap — most competitors can't match local inference requirements.</div>
+            <div class="tg-time">Local · 8B · 0ms cloud</div>
+          </div>
+          <div class="tg-lock-badge">🔒 Stored encrypted locally · AES-256</div>
+        </div>
+      </div>
+      <div class="tg-msg">
+        <div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+          <div class="tg-bubble right">
+            <div class="tg-bubble-text">What does the cloud provider actually see when I use cloud fallback?</div>
+            <div class="tg-time">You</div>
+          </div>
+        </div>
+        <div class="tg-avatar">U</div>
+      </div>
+      <div class="tg-msg">
+        <div class="tg-avatar">AI</div>
+        <div>
+          <div class="tg-bubble">
+            <div class="tg-bubble-text encrypted" id="tgEncMsg" onclick="revealTgMsg()" data-original="Only the sandboxed folder contents they're scoped to — never your full vault, never your identity. Through TOR: not even your IP.">
+              a7f3b2e9c1d4f8a2...3e7c9b1d2f4a6e8c...b2d4f6a8c1e3f7b9...click to decrypt
+            </div>
+            <div class="tg-time" id="tgEncTime">Encrypted · Click to reveal locally</div>
+          </div>
+          <div class="tg-lock-badge">🔒 Tap to decrypt with local passkey</div>
+        </div>
+      </div>
+      <div class="tg-msg">
+        <div class="tg-avatar">AI</div>
+        <div>
+          <div class="tg-bubble">
+            <div class="tg-bubble-text">Your personal memory is sanitised before storage. Raw cloud responses never persist. Your private AI rewrites them into your encrypted vault.</div>
+            <div class="tg-time">Local · Memory agent · 0 cloud storage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- MANIFESTO -->
+<div id="manifesto" class="manifesto">
+  <div class="manifesto-inner">
+    <div class="stag"><div class="stag-l"></div><span class="stag-t">05 / Manifesto</span></div>
+    <h2 class="sh" style="color:white;">PRIVACY IS NOT<br>A COMPLIANCE<br><em>checkbox.</em></h2>
+    <div class="m-lines" id="mLines">
+      <div class="m-line"><span class="m-n">I.</span><p class="m-t">Your intelligence is <em>yours.</em> Not a product. Not training data.</p></div>
+      <div class="m-line"><span class="m-n">II.</span><p class="m-t">A notebook should be <em>sacred.</em> No company reads your thoughts.</p></div>
+      <div class="m-line"><span class="m-n">III.</span><p class="m-t">Sovereign AI means the model runs where <em>you</em> decide.</p></div>
+      <div class="m-line"><span class="m-n">IV.</span><p class="m-t">Cloud should be an <em>option,</em> never a dependency.</p></div>
+      <div class="m-line"><span class="m-n">V.</span><p class="m-t">When cloud is used, it is <em>sandboxed, scoped, sanitised.</em></p></div>
+      <div class="m-line"><span class="m-n">VI.</span><p class="m-t">Memory belongs to the person who <em>built</em> it.</p></div>
+      <div class="m-line"><span class="m-n">VII.</span><p class="m-t">Intelligence without <em>sovereignty</em> is just a subscription.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="pricing" class="pricing-section">
+  <div class="pricing-inner">
+    <div class="stag rv"><div class="stag-l"></div><span class="stag-t">06 / Pricing</span></div>
+    <h2 class="sh rv">SIMPLE.<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:var(--purple);text-transform:none;">sovereign.</em></h2>
+    <div class="pricing-grid rv">
+      <div class="price-card">
+        <span class="price-plan">Core — Free</span>
+        <div class="price-num">$0</div>
+        <span class="price-per">forever · no credit card</span>
+        <div class="price-list">
+          <div class="pl-item">Local inference (Ollama + 8B)</div>
+          <div class="pl-item">AES-256 encrypted vault</div>
+          <div class="pl-item">Zettelkasten + daily notes</div>
+          <div class="pl-item">Kanban task boards</div>
+          <div class="pl-item">Single inline agent</div>
+        </div>
+        <button class="price-btn" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join Waitlist</button>
+      </div>
+      <div class="price-card feat">
+        <span class="price-plan">Sovereign — Recommended</span>
+        <div class="price-num" style="color:white;">$12</div>
+        <span class="price-per">per month</span>
+        <div class="price-list">
+          <div class="pl-item">Everything in Core</div>
+          <div class="pl-item">Multi-agent team</div>
+          <div class="pl-item">LoRA + RAG over your vault</div>
+          <div class="pl-item">Cloud fallback + TOR toggle</div>
+          <div class="pl-item">Sandboxed cloud models</div>
+          <div class="pl-item">All plugins unlocked</div>
+        </div>
+        <button class="price-btn" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join Waitlist</button>
+      </div>
+      <div class="price-card">
+        <span class="price-plan">Enclave — Enterprise</span>
+        <div class="price-num">Talk</div>
+        <span class="price-per">to us</span>
+        <div class="price-list">
+          <div class="pl-item">Custom LoRA fine-tuning</div>
+          <div class="pl-item">Enclave cloud deployment</div>
+          <div class="pl-item">Compliance + audit logs</div>
+          <div class="pl-item">Dedicated support</div>
+          <div class="pl-item">Team vaults + roles</div>
+        </div>
+        <button class="price-btn">Contact Us</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- WAITLIST -->
+<div id="waitlist" class="waitlist">
+  <div class="wl-inner">
+    <div class="stag rv" style="justify-content:center;"><div class="stag-l"></div><span class="stag-t">07 / Early Access</span></div>
+    <h2 class="sh rv" style="text-align:center;">BE FIRST TO<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:var(--purple);text-transform:none;">reclaim yours.</em></h2>
+    <p class="rv" style="font-size:11px;color:var(--mid);margin-top:12px;line-height:1.9;text-align:center;">Private beta launching soon. Join to get early access, shape the product, and be notified at launch.</p>
+    <div class="wl-form rv" id="wlForm">
+      <input type="email" class="wl-input" placeholder="your@email.com" id="wlEmail">
+      <button class="wl-submit" onclick="handleWL()">Secure my spot</button>
+    </div>
+    <span class="wl-note rv">No cloud. No tracking. Not even from us.</span>
+    <div class="wl-badges rv">
+      <span class="wl-badge"><span class="wl-dot"></span>Local encrypted</span>
+      <span class="wl-badge"><span class="wl-dot"></span>AES-256 vault</span>
+      <span class="wl-badge"><span class="wl-dot"></span>Zero tracking</span>
+      <span class="wl-badge"><span class="wl-dot"></span>Open source core</span>
+    </div>
+  </div>
+</div>
+
+<div class="div"></div>
+
+<!-- INSTALL -->
+<div class="install">
+  <div class="install-inner">
+    <div class="stag rv" style="justify-content:center;"><div class="stag-l"></div><span class="stag-t">08 / Install Now</span></div>
+    <h2 class="sh rv" style="text-align:center;">AVAILABLE<br>EVERYWHERE.</h2>
+    <div class="inst-grid rv">
+      <a href="#waitlist" class="inst-btn"><span>🍎</span>macOS</a>
+      <a href="#waitlist" class="inst-btn"><span>🪟</span>Windows</a>
+      <a href="#waitlist" class="inst-btn"><span>🐧</span>Linux</a>
+      <a href="#waitlist" class="inst-btn"><span>📱</span>iOS</a>
+      <a href="#waitlist" class="inst-btn"><span>🤖</span>Android</a>
+    </div>
+    <p class="rv" style="font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--light);margin-top:36px;text-align:center;">Coming Q3 2025 · No account needed · Local model downloads on first launch</p>
+  </div>
+</div>
+
+<footer>
+  <span class="f-logo">SOBERANO<span>AI</span></span>
+  <span class="f-note">Your intelligence, entirely yours.</span>
+  <span class="f-note">© 2025 SoberanoAI</span>
+</footer>
+
+<script>
+// ── PROGRESS BAR ──
+const prog = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  prog.style.width = pct + '%';
+});
+
+// ── LIVE CLOCK ──
+function clock() {
+  const now = new Date();
+  document.getElementById('liveclock').textContent =
+    now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+clock(); setInterval(clock, 1000);
+
+// ── CURSOR ──
+const cur = document.getElementById('cur'), curR = document.getElementById('cur-r');
+let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cur.style.left=mx+'px'; cur.style.top=my+'px'; });
+(function raf(){ rx+=(mx-rx)*.11; ry+=(my-ry)*.11; curR.style.left=rx+'px'; curR.style.top=ry+'px'; requestAnimationFrame(raf); })();
+document.querySelectorAll('button,a,.plugin-card,.nb-feat,.feat-card,.price-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cx'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cx'));
+});
+
+// ── CIPHER BG STREAM ──
+const cBg = document.getElementById('cipherBg');
+const HEX = '0123456789ABCDEF';
+let cipherContent = '';
+for(let i=0;i<40;i++){
+  let line='';
+  for(let j=0;j<120;j++) line += HEX[Math.floor(Math.random()*16)];
+  cipherContent += line+'\n';
+}
+cBg.textContent = cipherContent;
+setInterval(()=>{
+  const lines = cBg.textContent.split('\n');
+  const idx = Math.floor(Math.random()*lines.length);
+  const line = lines[idx];
+  if(line){
+    const ci = Math.floor(Math.random()*line.length);
+    lines[idx] = line.substring(0,ci)+HEX[Math.floor(Math.random()*16)]+line.substring(ci+1);
+    cBg.textContent = lines.join('\n');
+  }
+},60);
+
+// ── AES KEY ANIMATION ──
+const aesEl = document.getElementById('aesKey');
+const fullKey = '2f8b3a1c9e7d4f60a5b2c8e1f3a7d9b4c2e6f8a1d3b5c7e9f2a4b6d8e0f1c3';
+let aesRevealed = 0;
+setInterval(()=>{
+  if(aesRevealed < fullKey.length){
+    aesRevealed++;
+    aesEl.textContent = fullKey.substring(0,aesRevealed) + Array(fullKey.length-aesRevealed).fill(HEX[Math.floor(Math.random()*16)]).join('');
+  }
+},80);
+
+// ── PHONE DATE ──
+document.getElementById('psDate').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'});
+
+// ── ENCRYPTED HEADING REVEAL (scroll triggered) ──
+const CHARS = '█▓▒░01ABCDEFabcdef◆◇!@#$%';
+function encReveal(el, dur=1200){
+  const txt = el.textContent; let f=0; const total=40;
+  const go=()=>{
+    f++;
+    const pct=f/total; const rev=Math.floor(pct*txt.length);
+    let out='';
+    for(let i=0;i<txt.length;i++){
+      if(txt[i]===' '){out+=' ';continue;}
+      out += i<rev ? txt[i] : CHARS[Math.floor(Math.random()*CHARS.length)];
+    }
+    el.textContent=out;
+    if(f<total) setTimeout(go,dur/total); else el.textContent=txt;
+  };
+  go();
+}
+// hero accent on load
+setTimeout(()=>{ const a=document.getElementById('heroAccent'); if(a) encReveal(a,1600); },800);
+
+// ── SCROLL REVEAL ──
+const rvObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('vis'); rvObs.unobserve(e.target); }
+  });
+},{threshold:.1});
+document.querySelectorAll('.rv,.rv2').forEach(el=>rvObs.observe(el));
+
+// Enc headings reveal on scroll
+const encObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ encReveal(e.target,1000); encObs.unobserve(e.target); } });
+},{threshold:.3});
+document.querySelectorAll('.enc-head').forEach(el=>encObs.observe(el));
+
+// Manifesto lines stagger
+const mObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.m-line').forEach((l,i)=>setTimeout(()=>l.classList.add('vis'),i*140));
+      mObs.unobserve(e.target);
+    }
+  });
+},{threshold:.05});
+const ml = document.getElementById('mLines'); if(ml) mObs.observe(ml);
+
+// Tg messages stagger
+const tgObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.tg-msg').forEach((m,i)=>setTimeout(()=>m.classList.add('vis'),i*200));
+      tgObs.unobserve(e.target);
+    }
+  });
+},{threshold:.05});
+const tgWrap = document.querySelector('.tg-messages'); if(tgWrap) tgObs.observe(tgWrap);
+
+// ── TELEGRAM DECRYPT ──
+window.revealTgMsg = function(){
+  const el = document.getElementById('tgEncMsg');
+  const orig = el.dataset.original;
+  el.classList.remove('encrypted');
+  el.style.color='rgba(255,255,255,.85)';
+  el.style.cursor='default';
+  el.removeAttribute('onclick');
+  document.getElementById('tgEncTime').textContent = '🔓 Decrypted locally · never sent to cloud';
+  // cipher reveal animation
+  let f=0; const total=50;
+  const go=()=>{
+    f++;
+    const pct=f/total; const rev=Math.floor(pct*orig.length);
+    let out='';
+    for(let i=0;i<orig.length;i++){
+      if(orig[i]===' '){out+=' ';continue;}
+      out += i<rev ? orig[i] : CHARS[Math.floor(Math.random()*CHARS.length)];
+    }
+    el.textContent=out;
+    if(f<total) setTimeout(go,1600/total); else el.textContent=orig;
+  };
+  go();
+};
+
+// ── COUNT UP STATS ──
+function countUp(el){
+  const target = parseInt(el.dataset.target||el.dataset.count||0);
+  const suffix = el.dataset.suffix||'';
+  const prefix = el.dataset.prefix||'';
+  let cur=0; const steps=60; const inc=target/steps;
+  const go=()=>{
+    cur=Math.min(cur+inc,target);
+    el.textContent=prefix+Math.floor(cur)+suffix;
+    if(cur<target) requestAnimationFrame(go);
+  };
+  go();
+}
+const cuObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      countUp(e.target);
+      cuObs.unobserve(e.target);
+    }
+  });
+},{threshold:.5});
+document.querySelectorAll('[data-target],[data-count]').forEach(el=>cuObs.observe(el));
+
+// ── SRI CANVAS ──
+const canvas=document.getElementById('sriCanvas');
+const ctx=canvas.getContext('2d');
+function rsz(){ canvas.width=canvas.offsetWidth*devicePixelRatio; canvas.height=canvas.offsetHeight*devicePixelRatio; ctx.scale(devicePixelRatio,devicePixelRatio); }
+rsz(); window.addEventListener('resize',rsz);
+const W=()=>canvas.offsetWidth, H=()=>canvas.offsetHeight;
+const nodes=[];
+const TYPES={local:'#6b5ce7',cloud:'#f59e0b',enclave:'#60a5fa',exo:'#22c55e'};
+const LABELS={local:'Local',cloud:'Anthropic',enclave:'Enclave',exo:'Exo'};
+const tkeys=Object.keys(TYPES);
+for(let i=0;i<18;i++){
+  const t=tkeys[i<6?0:i<10?3:i<14?2:1];
+  nodes.push({x:30+Math.random()*(W()-60),y:15+Math.random()*(H()-30),vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:2.5+Math.random()*2.5,type:t,pulse:Math.random()*Math.PI*2});
+}
+let routes=[];
+function spawnRoute(){ const a=nodes[Math.floor(Math.random()*nodes.length)],b=nodes[Math.floor(Math.random()*nodes.length)]; if(a!==b) routes.push({a,b,t:0,s:.016}); }
+setInterval(spawnRoute,700); spawnRoute(); spawnRoute();
+function drawSRI(){
+  ctx.clearRect(0,0,W(),H());
+  nodes.forEach((n,i)=>{
+    nodes.slice(i+1).forEach(m=>{
+      const d=Math.hypot(n.x-m.x,n.y-m.y);
+      if(d<100){ ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.strokeStyle=`rgba(107,92,231,${.05*(1-d/100)})`;ctx.lineWidth=.8;ctx.stroke(); }
+    });
+  });
+  routes=routes.filter(r=>{
+    r.t+=r.s; if(r.t>=1) return false;
+    ctx.beginPath();ctx.moveTo(r.a.x,r.a.y);ctx.lineTo(r.b.x,r.b.y);ctx.strokeStyle='rgba(107,92,231,.08)';ctx.lineWidth=1;ctx.stroke();
+    const px=r.a.x+(r.b.x-r.a.x)*r.t, py=r.a.y+(r.b.y-r.a.y)*r.t;
+    ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fillStyle=TYPES[r.a.type];ctx.fill();
+    return true;
+  });
+  nodes.forEach(n=>{
+    n.pulse+=.04; n.x+=n.vx; n.y+=n.vy;
+    if(n.x<15||n.x>W()-15) n.vx*=-1;
+    if(n.y<10||n.y>H()-10) n.vy*=-1;
+    const c=TYPES[n.type];
+    const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*3.5);
+    g.addColorStop(0,c.replace('rgb','rgba').replace(')',',0.2)'));
+    g.addColorStop(1,'transparent');
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r*3.5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();
+  });
+  requestAnimationFrame(drawSRI);
+}
+drawSRI();
+
+// ── PARALLAX BLOBS ──
+document.addEventListener('mousemove',e=>{
+  const x=e.clientX/innerWidth-.5, y=e.clientY/innerHeight-.5;
+  document.querySelector('.b1').style.transform=`translate(${x*45}px,${y*32}px)`;
+  document.querySelector('.b2').style.transform=`translate(${-x*30}px,${-y*38}px)`;
+  document.querySelector('.b3').style.transform=`translate(${x*20}px,${-y*24}px)`;
+});
+
+// ── WAITLIST ──
+function handleWL(){
+  const e=document.getElementById('wlEmail')?.value;
+  if(!e||!e.includes('@')){ document.getElementById('wlEmail').style.outline='2px solid var(--purple)'; return; }
+  document.getElementById('wlForm').innerHTML='<div style="padding:20px;text-align:center;font-size:11px;color:var(--purple);width:100%;letter-spacing:.15em;">✓ &nbsp;Sovereignty incoming. You\'re on the list.</div>';
+}
+
+// ── NAV ACTIVE ──
+const secs = document.querySelectorAll('section,[id]');
+const links = document.querySelectorAll('.nav-mid a');
+window.addEventListener('scroll',()=>{
+  let current='';
+  secs.forEach(s=>{ if(s.offsetTop-80<=scrollY) current=s.id||''; });
+  links.forEach(l=>{ l.classList.toggle('active', l.getAttribute('href')==='#'+current); });
+},{ passive:true });
+
+// ── 3D TILT PLUGIN CARDS ──
+document.querySelectorAll('.plugin-card').forEach(c=>{
+  c.addEventListener('mousemove',e=>{
+    const r=c.getBoundingClientRect();
+    const rx=((e.clientY-r.top)/r.height-.5)*-7;
+    const ry=((e.clientX-r.left)/r.width-.5)*7;
+    c.style.transform=`perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
+  });
+  c.addEventListener('mouseleave',()=>c.style.transform='');
+});
+</script>
+</body>
+</html>
