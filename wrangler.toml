@@ -6,6 +6,9 @@ account_id = "261ec074fb3907bfa01b320a189460de"
 [assets]
 directory = "./public"
 
+[assets]
+directory = "./public"
+
 [vars]
 # Comma-separated list of allowed frontend origins. Keep empty to allow all origins during early testing.
 ALLOWED_ORIGINS = ""
