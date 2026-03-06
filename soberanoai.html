@@ -1161,11 +1161,11 @@ function resolveWaitlistEndpoint() {
   const fromQuery = new URLSearchParams(window.location.search).get('waitlistEndpoint');
   if (fromQuery) return fromQuery;
 
-  return 'https://replace-with-your-worker-domain.workers.dev/api/waitlist';
+  return 'https://soberano.crisstiano.workers.dev/api/waitlist';
 }
 
 function isWorkerEndpointConfigured(endpoint) {
-  return endpoint && !endpoint.includes('replace-with-your-worker-domain.workers.dev');
+  return typeof endpoint === 'string' && endpoint.startsWith('https://') && endpoint.includes('/api/waitlist');
 }
 
 async function handleWL(event){

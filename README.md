@@ -32,7 +32,8 @@ Landing page for SoberanoAI with a Cloudflare Worker-powered waitlist endpoint.
    ```bash
    wrangler deploy
    ```
-7. Open your worker URL (for example, `https://<name>.<subdomain>.workers.dev`) to view the landing page.
+7. Open your worker URL (for example, `https://soberano.crisstiano.workers.dev`) to view the landing page.
+8. This frontend defaults to `https://soberano.crisstiano.workers.dev/api/waitlist` unless overridden by `window.WAITLIST_ENDPOINT` or `?waitlistEndpoint=`.
 
 ## Local preview
 
