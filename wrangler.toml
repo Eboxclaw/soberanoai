@@ -1,6 +1,10 @@
-name = "soberanoai"
+name = "soberano"
 main = "worker.js"
 compatibility_date = "2024-11-01"
+account_id = "261ec074fb3907bfa01b320a189460de"
+
+[assets]
+directory = "./public"
 
 [vars]
 # Comma-separated list of allowed frontend origins. Keep empty to allow all origins during early testing.
