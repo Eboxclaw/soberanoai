@@ -1,6 +1,6 @@
 export default {
   async fetch(request, env) {
-    const corsHeaders = buildCorsHeaders(request);
+    const corsHeaders = buildCorsHeaders(request, env);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders });
@@ -28,18 +28,32 @@ export default {
     }
 
     const createdAt = new Date().toISOString();
-    const record = { email, createdAt, source: body?.source || 'soberanoai-landing' };
+    const record = { email, createdAt, source: sanitizeSource(body?.source) };
 
-    if (env.WAITLIST_KV) {
-      await env.WAITLIST_KV.put(`waitlist:${email}`, JSON.stringify(record));
-    }
+    try {
+      if (env.WAITLIST_KV) {
+        const key = `waitlist:${email}`;
+        const existing = await env.WAITLIST_KV.get(key);
+        if (existing) {
+          return json({ ok: true, alreadyJoined: true, message: 'Email already on waitlist.' }, 200, corsHeaders);
+        }
+        await env.WAITLIST_KV.put(key, JSON.stringify(record));
+      }
 
-    if (env.WAITLIST_WEBHOOK_URL) {
-      await fetch(env.WAITLIST_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(record)
-      });
+      if (env.WAITLIST_WEBHOOK_URL) {
+        const webhookRes = await fetch(env.WAITLIST_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+
+        if (!webhookRes.ok) {
+          console.warn(`WAITLIST_WEBHOOK_URL returned ${webhookRes.status}`);
+        }
+      }
+    } catch (error) {
+      console.error('waitlist_store_error', error);
+      return json({ error: 'Unable to process waitlist request.' }, 500, corsHeaders);
     }
 
     return json({ ok: true, message: 'Joined waitlist successfully.' }, 200, corsHeaders);
@@ -56,14 +70,34 @@ function json(payload, status, extraHeaders = {}) {
   });
 }
 
-function buildCorsHeaders(request) {
-  const origin = request.headers.get('Origin') || '*';
+function buildCorsHeaders(request, env) {
+  const requestOrigin = request.headers.get('Origin');
+  const allowlist = parseAllowedOrigins(env.ALLOWED_ORIGINS);
+
+  const allowOrigin =
+    allowlist.length === 0
+      ? (requestOrigin || '*')
+      : (requestOrigin && allowlist.includes(requestOrigin) ? requestOrigin : allowlist[0]);
+
   return {
-    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Vary': 'Origin'
   };
+}
+
+function parseAllowedOrigins(value) {
+  if (!value) return [];
+  return String(value)
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
+function sanitizeSource(value) {
+  const source = String(value || 'soberanoai-landing').trim();
+  return source.slice(0, 120);
 }
 
 function isValidEmail(value) {

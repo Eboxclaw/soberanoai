@@ -1148,11 +1148,25 @@ document.addEventListener('mousemove',e=>{
 });
 
 // ── WAITLIST (Cloudflare Worker) ──
-const WAITLIST_ENDPOINT = window.WAITLIST_ENDPOINT || 'https://replace-with-your-worker-domain.workers.dev/api/waitlist';
+const WAITLIST_ENDPOINT = resolveWaitlistEndpoint();
 const wlForm = document.getElementById('wlForm');
 const wlEmail = document.getElementById('wlEmail');
 const wlSubmit = document.getElementById('wlSubmit');
 const wlNote = document.getElementById('wlNote');
+
+function resolveWaitlistEndpoint() {
+  const fromWindow = typeof window.WAITLIST_ENDPOINT === 'string' ? window.WAITLIST_ENDPOINT.trim() : '';
+  if (fromWindow) return fromWindow;
+
+  const fromQuery = new URLSearchParams(window.location.search).get('waitlistEndpoint');
+  if (fromQuery) return fromQuery;
+
+  return 'https://replace-with-your-worker-domain.workers.dev/api/waitlist';
+}
+
+function isWorkerEndpointConfigured(endpoint) {
+  return endpoint && !endpoint.includes('replace-with-your-worker-domain.workers.dev');
+}
 
 async function handleWL(event){
   event?.preventDefault();
@@ -1164,16 +1178,25 @@ async function handleWL(event){
     return;
   }
 
+  if (!isWorkerEndpointConfigured(WAITLIST_ENDPOINT)) {
+    wlNote.textContent = 'Waitlist endpoint is not configured yet.';
+    return;
+  }
+
   wlEmail.style.outline='none';
   wlSubmit.disabled = true;
   wlSubmit.textContent = 'Securing...';
   wlNote.textContent = 'Encrypting request and contacting enclave edge...';
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
   try {
     const response = await fetch(WAITLIST_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, source: 'soberanoai-landing' })
+      body: JSON.stringify({ email, source: 'soberanoai-landing' }),
+      signal: controller.signal
     });
 
     const result = await response.json().catch(() => ({}));
@@ -1182,11 +1205,15 @@ async function handleWL(event){
     }
 
     wlForm.innerHTML = '<div style="padding:20px;text-align:center;font-size:11px;color:var(--purple);width:100%;letter-spacing:.15em;">✓ &nbsp;Sovereignty incoming. You\'re on the list.</div>';
-    wlNote.textContent = 'Confirmed via Cloudflare edge.';
+    wlNote.textContent = result.alreadyJoined ? "Already on the waitlist — we'll be in touch." : 'Confirmed via Cloudflare edge.';
   } catch (error) {
     wlSubmit.disabled = false;
     wlSubmit.textContent = 'Secure my spot';
-    wlNote.textContent = error.message || 'Network issue. Please try again in a moment.';
+    wlNote.textContent = error.name === 'AbortError'
+      ? 'Request timed out. Please try again.'
+      : (error.message || 'Network issue. Please try again in a moment.');
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
