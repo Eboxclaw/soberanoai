@@ -347,6 +347,27 @@ footer{padding:32px 40px;border-top:1px solid rgba(107,92,231,.07);display:flex;
   .pricing-sec{padding:70px 20px;} .wl-sec{padding:70px 20px;}
   .inst-sec{padding:70px 20px;} footer{padding:28px 20px;flex-direction:column;align-items:flex-start;}
 }
+
+
+button:focus-visible,a:focus-visible,input:focus-visible,[role="button"]:focus-visible{
+  outline:2px solid var(--pu);
+  outline-offset:3px;
+}
+
+.wl-feedback{padding:16px 12px;text-align:center;font-size:10px;letter-spacing:.12em;text-transform:uppercase;}
+.wl-feedback.ok{color:var(--green);}
+.wl-feedback.err{color:var(--red);}
+
+@media (pointer:coarse){
+  body{cursor:auto;}
+  #cur,#curR{display:none;}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+}
+
 </style>
 </head>
 <body>
@@ -376,7 +397,7 @@ footer{padding:32px 40px;border-top:1px solid rgba(107,92,231,.07);display:flex;
   </ul>
   <div class="nav-right">
     <span id="clock"></span>
-    <button class="nav-btn" onclick="scrollTo('waitlist')">Join Waitlist</button>
+    <button class="nav-btn" data-scroll-target="waitlist">Join Waitlist</button>
   </div>
 </nav>
 
@@ -422,8 +443,8 @@ footer{padding:32px 40px;border-top:1px solid rgba(107,92,231,.07);display:flex;
     </div>
 
     <div class="hero-ctas">
-      <button class="btn-fill" onclick="scrollTo('waitlist')">Join Waitlist →</button>
-      <button class="btn-ghost" onclick="scrollTo('notebook')">See the notebook ↓</button>
+      <button class="btn-fill" data-scroll-target="waitlist">Join Waitlist →</button>
+      <button class="btn-ghost" data-scroll-target="notebook">See the notebook ↓</button>
     </div>
   </div>
 
@@ -733,7 +754,7 @@ footer{padding:32px 40px;border-top:1px solid rgba(107,92,231,.07);display:flex;
       <div class="av">AI</div>
       <div>
         <div class="bubble">
-          <div class="bubble-enc" id="encMsg" onclick="decryptMsg()" data-orig="Only the sandboxed folder contents they're scoped to — never your full vault, never your identity. Routed through TOR: not even your IP reaches them.">b7f2a9e1c4d3f8b2...3e7c9a1d2f4b6e8d...c1e3f5a7b9d2f4c6...click to decrypt</div>
+          <div class="bubble-enc" id="encMsg" role="button" tabindex="0" aria-label="Decrypt message" data-orig="Only the sandboxed folder contents they're scoped to — never your full vault, never your identity. Routed through TOR: not even your IP reaches them.">b7f2a9e1c4d3f8b2...3e7c9a1d2f4b6e8d...c1e3f5a7b9d2f4c6...click to decrypt</div>
           <div class="btime" id="encTime">Encrypted · Click to decrypt locally</div>
         </div>
         <div class="enc-badge">🔒 Tap to decrypt with local passkey</div>
@@ -775,17 +796,17 @@ footer{padding:32px 40px;border-top:1px solid rgba(107,92,231,.07);display:flex;
     <div class="pc">
       <span class="pp">Core</span><div class="pnum" style="font-size:42px;padding-top:8px;padding-bottom:4px;">Early<br>Access</div><span class="pper">join the waitlist</span>
       <div class="plist"><div class="pi">Local inference (Ollama + 8B models)</div><div class="pi">AES-256 encrypted vault</div><div class="pi">Zettelkasten + daily notes</div><div class="pi">Kanban task boards</div><div class="pi">Single inline agent</div></div>
-      <button class="pbtn" onclick="scrollTo('waitlist')">Join Waitlist</button>
+      <button class="pbtn" data-scroll-target="waitlist">Join Waitlist</button>
     </div>
     <div class="pc feat">
       <span class="pp">Sovereign — Recommended</span><div class="pnum">$12</div><span class="pper">per month</span>
       <div class="plist"><div class="pi">Everything in Core</div><div class="pi">Multi-agent team (Router, Drafter, Analyst)</div><div class="pi">LoRA + RAG over your vault</div><div class="pi">Cloud fallback + TOR toggle</div><div class="pi">Sandboxed cloud models</div><div class="pi">All plugins + Exo mesh</div></div>
-      <button class="pbtn" onclick="scrollTo('waitlist')">Join Waitlist</button>
+      <button class="pbtn" data-scroll-target="waitlist">Join Waitlist</button>
     </div>
     <div class="pc">
       <span class="pp">Enclave — Enterprise</span><div class="pnum">Talk</div><span class="pper">to us</span>
       <div class="plist"><div class="pi">Custom LoRA fine-tuning</div><div class="pi">Enclave cloud deployment</div><div class="pi">Compliance + audit logs</div><div class="pi">Team vaults + roles</div><div class="pi">Dedicated support</div></div>
-      <button class="pbtn">Contact Us</button>
+      <button class="pbtn" data-scroll-target="waitlist">Contact Us</button>
     </div>
   </div>
 </div>
@@ -799,11 +820,11 @@ footer{padding:32px 40px;border-top:1px solid rgba(107,92,231,.07);display:flex;
   <div class="stag rv" style="justify-content:center;"><div class="sl"></div><span class="st">07 / Early Access</span></div>
   <h2 class="sh rv" style="text-align:center;">BE FIRST TO<br><em style="font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:var(--pu);text-transform:none;">reclaim yours.</em></h2>
   <p class="rv" style="font-size:11px;color:var(--mid);line-height:1.9;text-align:center;margin-top:10px;">Private beta launching soon. Be among the first to build on a truly sovereign AI.</p>
-  <div class="wl-form rv" id="wlForm">
-    <input type="email" class="wl-inp" placeholder="your@email.com" id="wlEmail">
-    <button class="wl-sub" onclick="handleWL()">Secure my spot</button>
-  </div>
-  <span class="wl-note rv">No cloud. No tracking. Not even from us.</span>
+  <form class="wl-form rv" id="wlForm" novalidate>
+    <input type="email" class="wl-inp" placeholder="your@email.com" id="wlEmail" autocomplete="email" required aria-label="Email address">
+    <button class="wl-sub" type="submit">Secure my spot</button>
+  </form>
+  <span class="wl-note rv" id="wlNote">No cloud. No tracking. Not even from us.</span>
   <div class="wl-badges rv">
     <span class="wb"><span class="wd"></span>Local encrypted</span>
     <span class="wb"><span class="wd"></span>AES-256 vault</span>
@@ -848,179 +869,399 @@ footer{padding:32px 40px;border-top:1px solid rgba(107,92,231,.07);display:flex;
 </footer>
 
 <script>
-// helpers
-const $ = id => document.getElementById(id);
-const scrollTo = id => document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const state = {
+    prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    waitlistSubmitting: false
+  };
 
-// PROGRESS
-window.addEventListener('scroll',()=>{
-  $('prog').style.width=(scrollY/(document.body.scrollHeight-innerHeight)*100)+'%';
-},{passive:true});
+  const scrollToSection = (id) => document.getElementById(id)?.scrollIntoView({ behavior: state.prefersReducedMotion ? 'auto' : 'smooth' });
 
-// CLOCK
-(function clk(){$('clock').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});setTimeout(clk,1000);})();
+  const bindScrollTargets = () => {
+    document.querySelectorAll('[data-scroll-target]').forEach((el) => {
+      el.addEventListener('click', () => scrollToSection(el.dataset.scrollTarget));
+    });
+  };
 
-// PHONE DATE
-$('psDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'});
+  const initProgress = () => {
+    const progress = $('prog');
+    if (!progress) return;
+    window.addEventListener('scroll', () => {
+      const scrollable = document.body.scrollHeight - innerHeight;
+      progress.style.width = `${scrollable > 0 ? (scrollY / scrollable) * 100 : 0}%`;
+    }, { passive: true });
+  };
 
-// CURSOR
-const cur=$('cur'),curR=$('curR');
-let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-(function raf(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(raf);})();
-document.querySelectorAll('button,a,.plug,.ed-link,.nb-feat').forEach(el=>{
-  el.addEventListener('mouseenter',()=>document.body.classList.add('cx'));
-  el.addEventListener('mouseleave',()=>document.body.classList.remove('cx'));
-});
+  const initClock = () => {
+    const clock = $('clock');
+    if (!clock) return;
+    const tick = () => {
+      clock.textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setTimeout(tick, 1000);
+    };
+    tick();
+  };
 
-// CIPHER RAIN
-const cipherEl=$('cipher');
-const HEX='0123456789ABCDEF◆◇█▓░';
-const cols=Math.floor(innerWidth/18);
-for(let i=0;i<cols;i++){
-  const col=document.createElement('div');
-  col.className='cipher-col';
-  col.style.left=(i*18)+'px';
-  col.style.animationDuration=(8+Math.random()*12)+'s';
-  col.style.animationDelay=(-Math.random()*20)+'s';
-  let txt='';
-  for(let j=0;j<60;j++) txt+=HEX[Math.floor(Math.random()*HEX.length)]+'\n';
-  col.textContent=txt;
-  cipherEl.appendChild(col);
-}
-setInterval(()=>{
-  cipherEl.querySelectorAll('.cipher-col').forEach(col=>{
-    if(Math.random()<.15){
-      const lines=col.textContent.split('\n');
-      const idx=Math.floor(Math.random()*lines.length);
-      lines[idx]=HEX[Math.floor(Math.random()*HEX.length)];
-      col.textContent=lines.join('\n');
+  const initDates = () => {
+    const psDate = $('psDate');
+    if (psDate) {
+      psDate.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' });
     }
-  });
-},120);
+  };
 
-// AES KEY REVEAL
-const KEY='2f8b3a1c9e7d4f60a5b2c8e1f3a7d9b4c2e6f8a1d3b5c7e9f2a4b6d8e0f1c3';
-let revealed=0;
-const aesEl=$('aesKey');
-setInterval(()=>{
-  if(revealed<KEY.length){
-    revealed++;
-    aesEl.textContent=KEY.substring(0,revealed)+Array(KEY.length-revealed).fill(HEX[Math.floor(Math.random()*16)]).join('');
-  }
-},70);
+  const initCursor = () => {
+    if (state.prefersReducedMotion || matchMedia('(pointer: coarse)').matches) return;
+    const cur = $('cur');
+    const curR = $('curR');
+    if (!cur || !curR) return;
+    let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+    document.addEventListener('mousemove', (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+      cur.style.left = `${mx}px`;
+      cur.style.top = `${my}px`;
+    });
+    const loop = () => {
+      rx += (mx - rx) * 0.11;
+      ry += (my - ry) * 0.11;
+      curR.style.left = `${rx}px`;
+      curR.style.top = `${ry}px`;
+      requestAnimationFrame(loop);
+    };
+    loop();
+    document.querySelectorAll('button,a,.plug,.ed-link,.nb-feat,[role="button"]').forEach((el) => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cx'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cx'));
+    });
+  };
 
-// ENCRYPTED HEADING REVEAL
-const CHARS='█▓▒░01ABCDabcd◆◇!@#';
-function encReveal(el,dur=1100){
-  const txt=el.textContent;let f=0;const tot=40;
-  const go=()=>{f++;const p=f/tot;const r=Math.floor(p*txt.length);let o='';
-    for(let i=0;i<txt.length;i++){if(txt[i]===' '){o+=' ';continue;}o+=i<r?txt[i]:CHARS[Math.floor(Math.random()*CHARS.length)];}
-    el.textContent=o;if(f<tot)setTimeout(go,dur/tot);else el.textContent=txt;};go();
-}
-setTimeout(()=>encReveal($('heroAcc'),1700),800);
+  const initCipherRain = () => {
+    const cipherEl = $('cipher');
+    if (!cipherEl || state.prefersReducedMotion) return;
+    const glyphs = '0123456789ABCDEF◆◇█▓░';
+    const cols = Math.floor(innerWidth / 18);
+    for (let i = 0; i < cols; i += 1) {
+      const col = document.createElement('div');
+      col.className = 'cipher-col';
+      col.style.left = `${i * 18}px`;
+      col.style.animationDuration = `${8 + Math.random() * 12}s`;
+      col.style.animationDelay = `${-Math.random() * 20}s`;
+      col.textContent = Array.from({ length: 60 }, () => glyphs[Math.floor(Math.random() * glyphs.length)]).join('\n');
+      cipherEl.appendChild(col);
+    }
+    setInterval(() => {
+      cipherEl.querySelectorAll('.cipher-col').forEach((col) => {
+        if (Math.random() < 0.15) {
+          const lines = col.textContent.split('\n');
+          lines[Math.floor(Math.random() * lines.length)] = glyphs[Math.floor(Math.random() * glyphs.length)];
+          col.textContent = lines.join('\n');
+        }
+      });
+    }, 140);
+  };
 
-// SCROLL REVEAL
-const rvObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');rvObs.unobserve(e.target);}});
-},{threshold:.1});
-document.querySelectorAll('.rv').forEach(el=>rvObs.observe(el));
+  const CHARS = '█▓▒░01ABCDabcd◆◇!@#';
+  const revealEncryptedText = (el, duration = 1100) => {
+    if (!el || state.prefersReducedMotion) return;
+    const text = el.textContent;
+    let frame = 0;
+    const totalFrames = 40;
+    const animate = () => {
+      frame += 1;
+      const revealed = Math.floor((frame / totalFrames) * text.length);
+      el.textContent = Array.from(text).map((char, i) => {
+        if (char === ' ') return char;
+        return i < revealed ? char : CHARS[Math.floor(Math.random() * CHARS.length)];
+      }).join('');
+      if (frame < totalFrames) {
+        setTimeout(animate, duration / totalFrames);
+      } else {
+        el.textContent = text;
+      }
+    };
+    animate();
+  };
 
-// ENC HEADINGS
-const encObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){encReveal(e.target,1000);encObs.unobserve(e.target);}});
-},{threshold:.3});
-document.querySelectorAll('.enc-h').forEach(el=>encObs.observe(el));
+  const initHeroEffects = () => {
+    setTimeout(() => revealEncryptedText($('heroAcc'), 1700), 800);
+    const keyEl = $('aesKey');
+    if (keyEl && !state.prefersReducedMotion) {
+      const key = '2f8b3a1c9e7d4f60a5b2c8e1f3a7d9b4c2e6f8a1d3b5c7e9f2a4b6d8e0f1c3';
+      let revealed = 0;
+      setInterval(() => {
+        if (revealed >= key.length) return;
+        revealed += 1;
+        const obfuscated = Array.from({ length: key.length - revealed }, () => '0123456789ABCDEF'[Math.floor(Math.random() * 16)]).join('');
+        keyEl.textContent = key.slice(0, revealed) + obfuscated;
+      }, 70);
+    }
+  };
 
-// MANIFESTO STAGGER
-const mObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){
-    e.target.querySelectorAll('.m-line').forEach((l,i)=>setTimeout(()=>l.classList.add('vis'),i*130));
-    mObs.unobserve(e.target);}});
-},{threshold:.05});
-const ml=$('mLines');if(ml)mObs.observe(ml);
+  const initObservers = () => {
+    const rvObs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('vis');
+          rvObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.rv').forEach((el) => rvObs.observe(el));
 
-// MSG STAGGER
-const msgObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){
-    e.target.querySelectorAll('.msg').forEach((m,i)=>setTimeout(()=>m.classList.add('vis'),i*180));
-    msgObs.unobserve(e.target);}});
-},{threshold:.05});
-const msgsEl=$('msgs');if(msgsEl)msgObs.observe(msgsEl);
+    const encObs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          revealEncryptedText(entry.target, 1000);
+          encObs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.enc-h').forEach((el) => encObs.observe(el));
 
-// DECRYPT MSG
-window.decryptMsg=function(){
-  const el=$('encMsg');const orig=el.dataset.orig;
-  el.classList.remove('bubble-enc');el.classList.add('bubble-txt');
-  el.style.cursor='default';el.onclick=null;
-  $('encTime').textContent='🔓 Decrypted locally · never sent to cloud';
-  let f=0;const tot=50;
-  const go=()=>{f++;const p=f/tot;const r=Math.floor(p*orig.length);let o='';
-    for(let i=0;i<orig.length;i++){if(orig[i]===' '){o+=' ';continue;}o+=i<r?orig[i]:CHARS[Math.floor(Math.random()*CHARS.length)];}
-    el.textContent=o;if(f<tot)setTimeout(go,1600/tot);else el.textContent=orig;};go();
-};
+    const stagger = (targetId, childSelector, className, delay) => {
+      const parent = $(targetId);
+      if (!parent) return;
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.querySelectorAll(childSelector).forEach((item, i) => setTimeout(() => item.classList.add(className), i * delay));
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.05 });
+      obs.observe(parent);
+    };
+    stagger('mLines', '.m-line', 'vis', 130);
+    stagger('msgs', '.msg', 'vis', 180);
 
-// COUNT UP
-function countUp(el){
-  const tgt=parseInt(el.dataset.count||0);
-  const suf=el.dataset.suffix||'';const pre=el.dataset.prefix||'';
-  let c=0;const steps=50;const inc=tgt/steps;
-  const go=()=>{c=Math.min(c+inc,tgt);el.textContent=pre+Math.floor(c)+suf;if(c<tgt)requestAnimationFrame(go);};go();
-}
-const cuObs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){countUp(e.target);cuObs.unobserve(e.target);}});
-},{threshold:.5});
-document.querySelectorAll('[data-count]').forEach(el=>cuObs.observe(el));
+    const cuObs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.dataset.count || '0', 10);
+          const suffix = el.dataset.suffix || '';
+          const prefix = el.dataset.prefix || '';
+          let current = 0;
+          const step = target / 50;
+          const animate = () => {
+            current = Math.min(current + step, target);
+            el.textContent = `${prefix}${Math.floor(current)}${suffix}`;
+            if (current < target) requestAnimationFrame(animate);
+          };
+          animate();
+          cuObs.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach((el) => cuObs.observe(el));
+  };
 
-// SRI CANVAS
-const canvas=$('sriCanvas'),ctx=canvas.getContext('2d');
-function rsz(){canvas.width=canvas.offsetWidth*devicePixelRatio;canvas.height=canvas.offsetHeight*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);}
-rsz();window.addEventListener('resize',rsz);
-const W=()=>canvas.offsetWidth,H=()=>canvas.offsetHeight;
-const TYPES={local:'#6b5ce7',exo:'#60a5fa',enclave:'#22c55e',cloud:'#f59e0b'};
-const LABELS=['Local','Ollama','Exo','Enclave'];
-const tkeys=Object.keys(TYPES);
-const nodes=[];
-for(let i=0;i<18;i++){
-  const t=tkeys[i<8?0:i<12?1:i<15?2:3];
-  nodes.push({x:28+Math.random()*(W()-56),y:12+Math.random()*(H()-24),vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:2.5+Math.random()*2,type:t});
-}
-let routes=[];
-function spR(){const a=nodes[Math.floor(Math.random()*nodes.length)],b=nodes[Math.floor(Math.random()*nodes.length)];if(a!==b)routes.push({a,b,t:0,s:.018});}
-setInterval(spR,750);spR();spR();
-function drawSRI(){
-  ctx.clearRect(0,0,W(),H());
-  nodes.forEach((n,i)=>{nodes.slice(i+1).forEach(m=>{const d=Math.hypot(n.x-m.x,n.y-m.y);if(d<95){ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.strokeStyle=`rgba(107,92,231,${.045*(1-d/95)})`;ctx.lineWidth=.7;ctx.stroke();}});});
-  routes=routes.filter(r=>{r.t+=r.s;if(r.t>=1)return false;
-    ctx.beginPath();ctx.moveTo(r.a.x,r.a.y);ctx.lineTo(r.b.x,r.b.y);ctx.strokeStyle='rgba(107,92,231,.07)';ctx.lineWidth=.8;ctx.stroke();
-    const px=r.a.x+(r.b.x-r.a.x)*r.t,py=r.a.y+(r.b.y-r.a.y)*r.t;
-    ctx.beginPath();ctx.arc(px,py,2.8,0,Math.PI*2);ctx.fillStyle=TYPES[r.a.type];ctx.fill();return true;});
-  nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<15||n.x>W()-15)n.vx*=-1;if(n.y<10||n.y>H()-10)n.vy*=-1;
-    const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*4);g.addColorStop(0,TYPES[n.type].replace('#','rgba(').replace(/(..)(..)(..)$/,(_,r,g,b)=>`${parseInt(r,16)},${parseInt(g,16)},${parseInt(b,16)},0.2)`));g.addColorStop(1,'transparent');
-    ctx.beginPath();ctx.arc(n.x,n.y,n.r*4,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
-    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=TYPES[n.type];ctx.fill();});
-  requestAnimationFrame(drawSRI);}
-drawSRI();
+  const initDecryptMessage = () => {
+    const encMsg = $('encMsg');
+    const encTime = $('encTime');
+    if (!encMsg || !encTime) return;
+    const decrypt = () => {
+      const original = encMsg.dataset.orig;
+      encMsg.classList.remove('bubble-enc');
+      encMsg.classList.add('bubble-txt');
+      encMsg.style.cursor = 'default';
+      encMsg.removeAttribute('role');
+      encMsg.removeAttribute('tabindex');
+      encMsg.removeAttribute('aria-label');
+      encTime.textContent = '🔓 Decrypted locally · never sent to cloud';
+      if (state.prefersReducedMotion) {
+        encMsg.textContent = original;
+        return;
+      }
+      let frame = 0;
+      const totalFrames = 50;
+      const run = () => {
+        frame += 1;
+        const revealed = Math.floor((frame / totalFrames) * original.length);
+        encMsg.textContent = Array.from(original).map((char, i) => {
+          if (char === ' ') return char;
+          return i < revealed ? char : CHARS[Math.floor(Math.random() * CHARS.length)];
+        }).join('');
+        if (frame < totalFrames) setTimeout(run, 1600 / totalFrames);
+      };
+      run();
+      encMsg.onclick = null;
+      encMsg.onkeydown = null;
+    };
+    encMsg.addEventListener('click', decrypt, { once: true });
+    encMsg.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        decrypt();
+      }
+    }, { once: true });
+  };
 
-// PARALLAX BLOBS
-document.addEventListener('mousemove',e=>{const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;
-  document.querySelector('.b1').style.transform=`translate(${x*42}px,${y*30}px)`;
-  document.querySelector('.b2').style.transform=`translate(${-x*28}px,${-y*36}px)`;
-  document.querySelector('.b3').style.transform=`translate(${x*18}px,${-y*22}px)`;});
+  const initCanvas = () => {
+    const canvas = $('sriCanvas');
+    if (!canvas || state.prefersReducedMotion) return;
+    const ctx = canvas.getContext('2d');
+    const types = { local: '#6b5ce7', exo: '#60a5fa', enclave: '#22c55e', cloud: '#f59e0b' };
+    const keys = Object.keys(types);
+    const W = () => canvas.offsetWidth;
+    const H = () => canvas.offsetHeight;
+    const resize = () => {
+      canvas.width = canvas.offsetWidth * devicePixelRatio;
+      canvas.height = canvas.offsetHeight * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    const nodes = Array.from({ length: 18 }, (_, i) => {
+      const type = keys[i < 8 ? 0 : i < 12 ? 1 : i < 15 ? 2 : 3];
+      return { x: 28 + Math.random() * (W() - 56), y: 12 + Math.random() * (H() - 24), vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, r: 2.5 + Math.random() * 2, type };
+    });
+    let routes = [];
+    setInterval(() => {
+      const a = nodes[Math.floor(Math.random() * nodes.length)];
+      const b = nodes[Math.floor(Math.random() * nodes.length)];
+      if (a !== b) routes.push({ a, b, t: 0, s: 0.018 });
+    }, 750);
 
-// PLUGIN 3D TILT
-document.querySelectorAll('.plug').forEach(c=>{
-  c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();
-    const rx=((e.clientY-r.top)/r.height-.5)*-6,ry=((e.clientX-r.left)/r.width-.5)*6;
-    c.style.transform=`perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;});
-  c.addEventListener('mouseleave',()=>c.style.transform='');});
+    const draw = () => {
+      ctx.clearRect(0, 0, W(), H());
+      nodes.forEach((n, i) => {
+        nodes.slice(i + 1).forEach((m) => {
+          const d = Math.hypot(n.x - m.x, n.y - m.y);
+          if (d < 95) {
+            ctx.beginPath();
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(m.x, m.y);
+            ctx.strokeStyle = `rgba(107,92,231,${0.045 * (1 - d / 95)})`;
+            ctx.lineWidth = 0.7;
+            ctx.stroke();
+          }
+        });
+      });
 
-// WAITLIST
-function handleWL(){
-  const e=$('wlEmail')?.value;
-  if(!e||!e.includes('@')){$('wlEmail').style.outline='2px solid var(--pu)';return;}
-  $('wlForm').innerHTML='<div style="padding:20px;text-align:center;font-size:11px;color:var(--pu);width:100%;letter-spacing:.14em;">✓ &nbsp;Sovereignty incoming. You\'re on the list.</div>';
-}
+      routes = routes.filter((r) => {
+        r.t += r.s;
+        if (r.t >= 1) return false;
+        const px = r.a.x + (r.b.x - r.a.x) * r.t;
+        const py = r.a.y + (r.b.y - r.a.y) * r.t;
+        ctx.beginPath();
+        ctx.moveTo(r.a.x, r.a.y);
+        ctx.lineTo(r.b.x, r.b.y);
+        ctx.strokeStyle = 'rgba(107,92,231,.07)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(px, py, 2.8, 0, Math.PI * 2);
+        ctx.fillStyle = types[r.a.type];
+        ctx.fill();
+        return true;
+      });
+
+      nodes.forEach((n) => {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 15 || n.x > W() - 15) n.vx *= -1;
+        if (n.y < 10 || n.y > H() - 10) n.vy *= -1;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = types[n.type];
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    };
+    draw();
+  };
+
+  const initParallaxAndTilt = () => {
+    if (state.prefersReducedMotion) return;
+    document.addEventListener('mousemove', (e) => {
+      const x = e.clientX / innerWidth - 0.5;
+      const y = e.clientY / innerHeight - 0.5;
+      const b1 = document.querySelector('.b1');
+      const b2 = document.querySelector('.b2');
+      const b3 = document.querySelector('.b3');
+      if (b1) b1.style.transform = `translate(${x * 42}px,${y * 30}px)`;
+      if (b2) b2.style.transform = `translate(${-x * 28}px,${-y * 36}px)`;
+      if (b3) b3.style.transform = `translate(${x * 18}px,${-y * 22}px)`;
+    });
+    document.querySelectorAll('.plug').forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -6;
+        const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 6;
+        card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  };
+
+  const waitlistEndpoint = () => {
+    const fromQuery = new URLSearchParams(location.search).get('waitlistEndpoint');
+    return fromQuery || window.WAITLIST_ENDPOINT || `${location.origin}/api/waitlist`;
+  };
+
+  const initWaitlist = () => {
+    const form = $('wlForm');
+    const emailInput = $('wlEmail');
+    const note = $('wlNote');
+    if (!form || !emailInput || !note) return;
+
+    const setFeedback = (message, ok) => {
+      note.textContent = message;
+      note.classList.remove('wl-feedback', 'ok', 'err');
+      note.classList.add('wl-feedback', ok ? 'ok' : 'err');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (state.waitlistSubmitting) return;
+      const email = emailInput.value.trim();
+      if (!email || !emailInput.checkValidity()) {
+        emailInput.focus();
+        setFeedback('Please add a valid email to continue.', false);
+        return;
+      }
+
+      state.waitlistSubmitting = true;
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
+
+      try {
+        const response = await fetch(waitlistEndpoint(), {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ email, source: 'soberanoai-landing' })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || 'Unable to join waitlist right now.');
+
+        setFeedback(payload.alreadyJoined ? 'You are already on the waitlist.' : '✓ Sovereignty incoming. You are on the list.', true);
+        form.reset();
+      } catch (error) {
+        setFeedback(error.message || 'Network error. Please try again in a minute.', false);
+      } finally {
+        state.waitlistSubmitting = false;
+        if (submitButton) submitButton.disabled = false;
+      }
+    });
+  };
+
+  bindScrollTargets();
+  initProgress();
+  initClock();
+  initDates();
+  initCursor();
+  initCipherRain();
+  initHeroEffects();
+  initObservers();
+  initDecryptMessage();
+  initCanvas();
+  initParallaxAndTilt();
+  initWaitlist();
+})();
 </script>
 </body>
 </html>
