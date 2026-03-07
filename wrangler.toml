@@ -1,7 +1,7 @@
-name = "soberano"
+name = "soberanoai"
 main = "worker.js"
 compatibility_date = "2024-11-01"
-account_id = "261ec074fb3907bfa01b320a189460de"
+account_id = "836ade685abebb6150aacf0420286683"
 assets = { directory = "./public" }
 
 [vars]
