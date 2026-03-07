@@ -47,6 +47,13 @@ wrangler deploy
 
 This repository is configured for account `261ec074fb3907bfa01b320a189460de` and worker name `soberano`, which maps to `https://soberano.crisstiano.workers.dev`.
 
+## Deploy troubleshooting
+
+If deploy fails with `Invalid TOML document: trying to redefine an already defined table or value` on `assets`:
+- Keep **only one** assets declaration in `wrangler.toml`.
+- This repo uses the inline form: `assets = { directory = "./public" }`.
+- Do **not** add a second `[assets]` table.
+
 ## Local preview
 
 Run worker with static assets locally:
