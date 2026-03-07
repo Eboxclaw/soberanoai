@@ -35,6 +35,18 @@ Landing page for SoberanoAI with a Cloudflare Worker-powered waitlist endpoint.
 7. Open your worker URL (for example, `https://soberano.crisstiano.workers.dev`) to view the landing page.
 8. This frontend defaults to `https://soberano.crisstiano.workers.dev/api/waitlist` unless overridden by `window.WAITLIST_ENDPOINT` or `?waitlistEndpoint=`.
 
+
+
+### Deploy with API token (non-interactive)
+
+If you already have a Cloudflare API token, deploy with:
+```bash
+export CLOUDFLARE_API_TOKEN="<your_api_token>"
+wrangler deploy
+```
+
+This repository is configured for account `261ec074fb3907bfa01b320a189460de` and worker name `soberano`, which maps to `https://soberano.crisstiano.workers.dev`.
+
 ## Local preview
 
 Run worker with static assets locally:
